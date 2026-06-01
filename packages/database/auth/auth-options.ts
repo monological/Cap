@@ -6,6 +6,7 @@ import type { NextAuthOptions } from "next-auth";
 import { getServerSession as _getServerSession } from "next-auth";
 import type { Adapter } from "next-auth/adapters";
 import { decode, type JWT, type JWTDecodeParams } from "next-auth/jwt";
+import CredentialsProvider from "next-auth/providers/credentials";
 import EmailProvider from "next-auth/providers/email";
 import GoogleProvider from "next-auth/providers/google";
 import type { Provider } from "next-auth/providers/index";
@@ -13,8 +14,10 @@ import WorkOSProvider from "next-auth/providers/workos";
 import { sendEmail } from "../emails/config.ts";
 import { db } from "../index.ts";
 import { users } from "../schema.ts";
+import { createUserWithDefaults } from "./create-user.ts";
 import { isEmailAllowedForSignup } from "./domain-utils.ts";
 import { DrizzleAdapter } from "./drizzle-adapter.ts";
+import { hashPassword, validatePassword, verifyPassword } from "./password.ts";
 
 export const maxDuration = 120;
 
@@ -96,42 +99,84 @@ export const authOptions = (): NextAuthOptions => {
 						};
 					},
 				}),
-				EmailProvider({
-					async generateVerificationToken() {
-						return crypto.randomInt(100000, 1000000).toString();
+				CredentialsProvider({
+					name: "Email and password",
+					credentials: {
+						mode: { label: "Mode", type: "text" },
+						email: { label: "Email", type: "email" },
+						password: { label: "Password", type: "password" },
 					},
-					async sendVerificationRequest({ identifier, token }) {
-						console.log("sendVerificationRequest");
+					async authorize(credentials) {
+						const mode = credentials?.mode;
+						const email = credentials?.email?.trim().toLowerCase();
+						const password = credentials?.password;
 
-						if (!serverEnv().RESEND_API_KEY) {
-							console.log("\n");
-							console.log(
-								"━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-							);
-							console.log("🔐 VERIFICATION CODE (Development Mode)");
-							console.log(
-								"━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-							);
-							console.log(`📧 Email: ${identifier}`);
-							console.log(`🔢 Code: ${token}`);
-							console.log(`⏱  Expires in: 10 minutes`);
-							console.log(
-								"━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-							);
-							console.log("\n");
-						} else {
-							console.log({ identifier, token });
-							const { OTPEmail } = await import("../emails/otp-email");
-							const email = OTPEmail({ code: token, email: identifier });
-							console.log({ email });
-							await sendEmail({
-								email: identifier,
-								subject: `Your Cap Verification Code`,
-								react: email,
+						if (!email || !password) return null;
+
+						if (mode === "signup") {
+							if (!validatePassword(password)) return null;
+
+							const allowedDomains = serverEnv().CAP_ALLOWED_SIGNUP_DOMAINS;
+							if (
+								allowedDomains &&
+								!isEmailAllowedForSignup(email, allowedDomains)
+							) {
+								return null;
+							}
+
+							const [existingUser] = await db()
+								.select({ id: users.id })
+								.from(users)
+								.where(eq(users.email, email))
+								.limit(1);
+
+							if (existingUser) return null;
+
+							const passwordHash = await hashPassword(password);
+							const user = await createUserWithDefaults(db(), {
+								email,
+								emailVerified: new Date(),
+								name: email.split("@")[0],
+								passwordHash,
 							});
+
+							return user;
 						}
+
+						if (mode !== "login") return null;
+
+						const [user] = await db()
+							.select()
+							.from(users)
+							.where(eq(users.email, email))
+							.limit(1);
+
+						if (!user) return null;
+
+						const isValid = await verifyPassword(password, user.passwordHash);
+						if (!isValid) return null;
+
+						return user;
 					},
 				}),
+				...(serverEnv().RESEND_API_KEY
+					? [
+							EmailProvider({
+								async generateVerificationToken() {
+									return crypto.randomInt(100000, 1000000).toString();
+								},
+								async sendVerificationRequest({ identifier, token }) {
+									const { OTPEmail } = await import("../emails/otp-email");
+									const email = OTPEmail({ code: token, email: identifier });
+									await sendEmail({
+										email: identifier,
+										subject: `Your Cap Verification Code`,
+										react: email,
+									});
+								},
+							}),
+						]
+					: []),
 			];
 
 			return _providers;

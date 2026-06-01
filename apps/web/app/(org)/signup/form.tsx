@@ -30,6 +30,7 @@ export function SignupForm() {
 	const router = useRouter();
 	const next = searchParams?.get("next");
 	const [email, setEmail] = useState("");
+	const [password, setPassword] = useState("");
 	const [loading, setLoading] = useState(false);
 	const [emailSent, setEmailSent] = useState(false);
 	const [oauthError, setOauthError] = useState(false);
@@ -42,9 +43,7 @@ export function SignupForm() {
 	const theme = Cookies.get("theme") || "light";
 
 	useEffect(() => {
-		theme === "dark"
-			? (document.body.className = "dark")
-			: (document.body.className = "light");
+		document.body.className = theme === "dark" ? "dark" : "light";
 		//remove the dark mode when we leave the dashboard
 		return () => {
 			document.body.className = "light";
@@ -75,15 +74,14 @@ export function SignupForm() {
 		handleErrors();
 	}, [searchParams]);
 
-	useEffect(() => {
+	const continueAfterAuth = async () => {
 		const pendingPriceId = localStorage.getItem("pendingPriceId");
 		const pendingQuantity = localStorage.getItem("pendingQuantity") ?? "1";
-		if (emailSent && pendingPriceId) {
+		if (pendingPriceId) {
 			localStorage.removeItem("pendingPriceId");
 			localStorage.removeItem("pendingQuantity");
 
-			// Wait a bit to ensure the user is created
-			setTimeout(async () => {
+			try {
 				const response = await fetch(`/api/settings/billing/subscribe`, {
 					method: "POST",
 					headers: {
@@ -98,10 +96,74 @@ export function SignupForm() {
 
 				if (data.url) {
 					window.location.href = data.url;
+					return;
 				}
-			}, 2000);
+			} catch (error) {
+				console.error("Checkout Error:", error);
+				toast.error("Unable to start checkout");
+			}
 		}
-	}, [emailSent]);
+
+		router.push(next && next.length > 0 ? next : "/dashboard");
+	};
+
+	const handleEmailCodeSignIn = async () => {
+		if (!email) return;
+
+		if (lastEmailSentTime) {
+			const timeSinceLastRequest = Date.now() - lastEmailSentTime;
+			const waitTime = 30000;
+			if (timeSinceLastRequest < waitTime) {
+				const remainingSeconds = Math.ceil(
+					(waitTime - timeSinceLastRequest) / 1000,
+				);
+				toast.error(
+					`Please wait ${remainingSeconds} seconds before requesting a new code`,
+				);
+				return;
+			}
+		}
+
+		setLoading(true);
+		const normalizedEmail = email.trim().toLowerCase();
+		trackEvent("auth_started", {
+			method: "email",
+			is_signup: true,
+			auth_surface: "signup",
+		});
+
+		try {
+			const res = await signIn("email", {
+				email: normalizedEmail,
+				redirect: false,
+				...(next && next.length > 0 ? { callbackUrl: next } : {}),
+			});
+			setLoading(false);
+
+			if (res?.ok && !res?.error) {
+				setEmailSent(true);
+				setLastEmailSentTime(Date.now());
+				trackEvent("auth_email_sent", {
+					method: "email",
+					is_signup: true,
+					auth_surface: "signup",
+					email_domain: normalizedEmail.split("@")[1],
+				});
+				const params = new URLSearchParams({
+					email: normalizedEmail,
+					...(next && { next }),
+					lastSent: Date.now().toString(),
+				});
+				router.push(`/verify-otp?${params.toString()}`);
+			} else {
+				toast.error("Please wait 30 seconds before requesting a new code");
+			}
+		} catch (_error) {
+			setEmailSent(false);
+			setLoading(false);
+			toast.error("Error sending email - try again?");
+		}
+	};
 
 	const handleGoogleSignIn = () => {
 		trackEvent("auth_started", {
@@ -134,6 +196,46 @@ export function SignupForm() {
 		} catch (error) {
 			console.error("Lookup Error:", error);
 			toast.error("Organization not found or SSO not configured");
+		}
+	};
+
+	const handlePasswordSignUp = async (e: React.FormEvent) => {
+		e.preventDefault();
+		const normalizedEmail = email.trim().toLowerCase();
+		if (!normalizedEmail || !password) return;
+
+		if (password.length < 8) {
+			toast.error("Password must be at least 8 characters");
+			return;
+		}
+
+		setLoading(true);
+		trackEvent("auth_started", {
+			method: "password",
+			is_signup: true,
+			auth_surface: "signup",
+		});
+
+		try {
+			const res = await signIn("credentials", {
+				mode: "signup",
+				email: normalizedEmail,
+				password,
+				redirect: false,
+				...(next && next.length > 0 ? { callbackUrl: next } : {}),
+			});
+
+			if (res?.ok && !res?.error) {
+				await continueAfterAuth();
+				return;
+			}
+
+			toast.error("Could not create an account with that email and password");
+		} catch (error) {
+			console.error("Signup Error:", error);
+			toast.error("Unable to create account");
+		} finally {
+			setLoading(false);
 		}
 	};
 
@@ -251,84 +353,20 @@ export function SignupForm() {
 											ease: "easeInOut",
 											opacity: { delay: 0.05 },
 										}}
-										onSubmit={async (e) => {
-											e.preventDefault();
-											if (!email) return;
-
-											// Check if we're rate limited on the client side
-											if (lastEmailSentTime) {
-												const timeSinceLastRequest =
-													Date.now() - lastEmailSentTime;
-												const waitTime = 30000; // 30 seconds
-												if (timeSinceLastRequest < waitTime) {
-													const remainingSeconds = Math.ceil(
-														(waitTime - timeSinceLastRequest) / 1000,
-													);
-													toast.error(
-														`Please wait ${remainingSeconds} seconds before requesting a new code`,
-													);
-													return;
-												}
-											}
-
-											setLoading(true);
-											trackEvent("auth_started", {
-												method: "email",
-												is_signup: true,
-												auth_surface: "signup",
-											});
-											const normalizedEmail = email.trim().toLowerCase();
-											signIn("email", {
-												email: normalizedEmail,
-												redirect: false,
-												...(next && next.length > 0
-													? { callbackUrl: next }
-													: {}),
-											})
-												.then((res) => {
-													setLoading(false);
-
-													if (res?.ok && !res?.error) {
-														setEmailSent(true);
-														setLastEmailSentTime(Date.now());
-														trackEvent("auth_email_sent", {
-															method: "email",
-															is_signup: true,
-															auth_surface: "signup",
-															email_domain: normalizedEmail.split("@")[1],
-														});
-														const params = new URLSearchParams({
-															email: normalizedEmail,
-															...(next && { next }),
-															lastSent: Date.now().toString(),
-														});
-														router.push(`/verify-otp?${params.toString()}`);
-													} else {
-														// NextAuth always returns "EmailSignin" for all email provider errors
-														// Since we already check rate limiting on the client side before sending,
-														// if we get an error here, it's likely rate limiting from the server
-														toast.error(
-															"Please wait 30 seconds before requesting a new code",
-														);
-													}
-												})
-												.catch((_error) => {
-													setEmailSent(false);
-													setLoading(false);
-													// Catch block is rarely triggered with NextAuth
-													toast.error("Error sending email - try again?");
-												});
-										}}
+										onSubmit={handlePasswordSignUp}
 										className="flex flex-col space-y-3"
 									>
 										<NormalSignup
 											setShowOrgInput={setShowOrgInput}
 											email={email}
+											password={password}
 											emailSent={emailSent}
 											setEmail={setEmail}
+											setPassword={setPassword}
 											loading={loading}
 											oauthError={oauthError}
 											handleGoogleSignIn={handleGoogleSignIn}
+											handleEmailCodeSignIn={handleEmailCodeSignIn}
 										/>
 									</motion.form>
 								)}
@@ -371,7 +409,6 @@ const SignupWithSSO = ({
 			className="relative space-y-2"
 		>
 			<MotionInput
-				id="organizationId"
 				placeholder="Enter your Organization ID..."
 				value={organizationId}
 				onChange={(e) => setOrganizationId(e.target.value)}
@@ -394,19 +431,25 @@ const SignupWithSSO = ({
 const NormalSignup = ({
 	setShowOrgInput,
 	email,
+	password,
 	emailSent,
 	setEmail,
+	setPassword,
 	loading,
 	oauthError,
 	handleGoogleSignIn,
+	handleEmailCodeSignIn,
 }: {
 	setShowOrgInput: (show: boolean) => void;
 	email: string;
+	password: string;
 	emailSent: boolean;
 	setEmail: (email: string) => void;
+	setPassword: (password: string) => void;
 	loading: boolean;
 	oauthError: boolean;
 	handleGoogleSignIn: () => void;
+	handleEmailCodeSignIn: () => void;
 }) => {
 	const publicEnv = usePublicEnv();
 
@@ -414,11 +457,10 @@ const NormalSignup = ({
 		<motion.div>
 			<motion.div layout className="flex flex-col space-y-3">
 				<MotionInput
-					id="email"
 					name="email"
 					autoFocus
 					type="email"
-					placeholder={emailSent ? "" : "tim@apple.com"}
+					placeholder={emailSent ? "" : "you@example.com"}
 					autoComplete="email"
 					required
 					value={email}
@@ -427,14 +469,38 @@ const NormalSignup = ({
 						setEmail(e.target.value.toLowerCase());
 					}}
 				/>
+				<MotionInput
+					name="password"
+					type="password"
+					placeholder="Password"
+					autoComplete="new-password"
+					required
+					minLength={8}
+					maxLength={128}
+					value={password}
+					disabled={emailSent || loading}
+					onChange={(e) => {
+						setPassword(e.target.value);
+					}}
+				/>
 				<MotionButton
 					variant="dark"
 					type="submit"
 					disabled={loading || emailSent}
-					icon={<FontAwesomeIcon className="mr-1 size-4" icon={faEnvelope} />}
 				>
-					Sign up with email
+					Create account
 				</MotionButton>
+				{publicEnv.emailAuthAvailable && (
+					<MotionButton
+						variant="gray"
+						type="button"
+						disabled={loading || emailSent || !email}
+						icon={<FontAwesomeIcon className="mr-1 size-4" icon={faEnvelope} />}
+						onClick={handleEmailCodeSignIn}
+					>
+						Email me a code
+					</MotionButton>
+				)}
 			</motion.div>
 			{(publicEnv.googleAuthAvailable || publicEnv.workosAuthAvailable) && (
 				<>
@@ -447,7 +513,7 @@ const NormalSignup = ({
 						layout
 						className="flex flex-col gap-3 justify-center items-center"
 					>
-						{!oauthError && (
+						{publicEnv.googleAuthAvailable && !oauthError && (
 							<MotionButton
 								variant="gray"
 								type="button"
@@ -468,22 +534,23 @@ const NormalSignup = ({
 								/>
 								<p className="text-xs leading-5 text-gray-50">
 									It looks like you've previously used this email to sign up via
-									email. Please enter your email below to receive a sign up
-									link.
+									another sign-in method. Please use that method to continue.
 								</p>
 							</div>
 						)}
-						<MotionButton
-							variant="gray"
-							type="button"
-							className="w-full"
-							layout
-							onClick={() => setShowOrgInput(true)}
-							disabled={loading}
-						>
-							<LucideArrowUpRight size={20} />
-							Sign up with SAML SSO
-						</MotionButton>
+						{publicEnv.workosAuthAvailable && (
+							<MotionButton
+								variant="gray"
+								type="button"
+								className="w-full"
+								layout
+								onClick={() => setShowOrgInput(true)}
+								disabled={loading || emailSent}
+							>
+								<LucideArrowUpRight size={20} />
+								Sign up with SAML SSO
+							</MotionButton>
+						)}
 					</motion.div>
 				</>
 			)}

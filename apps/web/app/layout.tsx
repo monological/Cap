@@ -120,6 +120,7 @@ export default ({ children }: PropsWithChildren) =>
 											webUrl: buildEnv.NEXT_PUBLIC_WEB_URL,
 											workosAuthAvailable: !!serverEnv().WORKOS_CLIENT_ID,
 											googleAuthAvailable: !!serverEnv().GOOGLE_CLIENT_ID,
+											emailAuthAvailable: !!serverEnv().RESEND_API_KEY,
 										}}
 									>
 										<ReactQueryProvider>
