@@ -91,7 +91,7 @@ const CapAIDialog = ({ setOpen }: { setOpen: (open: boolean) => void }) => {
 								setUpgradeModalOpen(true);
 							}}
 						>
-							Upgrade to Pro
+							Upgrade plan
 						</Button>
 					</div>
 				) : (

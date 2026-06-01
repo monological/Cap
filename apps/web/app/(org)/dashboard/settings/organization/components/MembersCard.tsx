@@ -247,7 +247,9 @@ export const MembersCard = ({ setIsInviteDialogOpen }: MembersCardProps) => {
 							<TableHead>Member</TableHead>
 							<TableHead>Email</TableHead>
 							<TableHead>Role</TableHead>
-							{buildEnv.NEXT_PUBLIC_IS_CAP && <TableHead>Pro</TableHead>}
+							{buildEnv.NEXT_PUBLIC_IS_CAP === "true" && (
+								<TableHead>Pro</TableHead>
+							)}
 							<TableHead>Joined</TableHead>
 							<TableHead>Status</TableHead>
 							<TableHead>Actions</TableHead>
@@ -308,7 +310,7 @@ export const MembersCard = ({ setIsInviteDialogOpen }: MembersCardProps) => {
 											/>
 										)}
 									</TableCell>
-									{buildEnv.NEXT_PUBLIC_IS_CAP && (
+									{buildEnv.NEXT_PUBLIC_IS_CAP === "true" && (
 										<TableCell>
 											{memberIsOwner ? (
 												<span className="text-xs text-gray-10">-</span>
@@ -377,7 +379,9 @@ export const MembersCard = ({ setIsInviteDialogOpen }: MembersCardProps) => {
 											"member",
 									)}
 								</TableCell>
-								{buildEnv.NEXT_PUBLIC_IS_CAP && <TableCell>-</TableCell>}
+								{buildEnv.NEXT_PUBLIC_IS_CAP === "true" && (
+									<TableCell>-</TableCell>
+								)}
 								<TableCell>-</TableCell>
 								<TableCell>Invited</TableCell>
 								<TableCell>

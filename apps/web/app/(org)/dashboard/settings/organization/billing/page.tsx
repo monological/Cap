@@ -26,7 +26,7 @@ export default function BillingAndMembersPage() {
 
 	return (
 		<div className="flex flex-col gap-6">
-			{buildEnv.NEXT_PUBLIC_IS_CAP &&
+			{buildEnv.NEXT_PUBLIC_IS_CAP === "true" &&
 				(canManageBilling ? (
 					<>
 						<BillingSummaryCard />

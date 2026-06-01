@@ -31,7 +31,7 @@ export const sendEmail = async ({
 		return Promise.resolve();
 	}
 
-	if (marketing && !buildEnv.NEXT_PUBLIC_IS_CAP) return;
+	if (marketing && buildEnv.NEXT_PUBLIC_IS_CAP !== "true") return;
 	let from: string;
 
 	if (fromOverride) from = fromOverride;

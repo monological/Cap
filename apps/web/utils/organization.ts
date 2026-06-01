@@ -53,9 +53,10 @@ export function calculateProSeats(organization: {
 	const proSeatsTotal = organization?.inviteQuota ?? 1;
 	const proSeatsUsed =
 		organization?.members?.filter((m) => m.hasProSeat).length ?? 0;
-	const proSeatsRemaining = buildEnv.NEXT_PUBLIC_IS_CAP
-		? Math.max(0, proSeatsTotal - proSeatsUsed)
-		: Number.MAX_SAFE_INTEGER;
+	const proSeatsRemaining =
+		buildEnv.NEXT_PUBLIC_IS_CAP === "true"
+			? Math.max(0, proSeatsTotal - proSeatsUsed)
+			: Number.MAX_SAFE_INTEGER;
 
 	return {
 		proSeatsTotal,

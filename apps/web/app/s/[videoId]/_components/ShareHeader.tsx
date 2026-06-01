@@ -133,7 +133,11 @@ export const ShareHeader = ({
 			return `https://${customDomain}/s/${data.id}`;
 		} else if (NODE_ENV === "development" && !customDomain && !domainVerified) {
 			return `${webUrl}/s/${data.id}`;
-		} else if (buildEnv.NEXT_PUBLIC_IS_CAP && customDomain && domainVerified) {
+		} else if (
+			buildEnv.NEXT_PUBLIC_IS_CAP === "true" &&
+			customDomain &&
+			domainVerified
+		) {
 			return `https://${customDomain}/s/${data.id}`;
 		} else {
 			return `${webUrl}/s/${data.id}`;
@@ -145,7 +149,11 @@ export const ShareHeader = ({
 			return `${customDomain}/s/${data.id}`;
 		} else if (NODE_ENV === "development" && !customDomain && !domainVerified) {
 			return `${webUrl}/s/${data.id}`;
-		} else if (buildEnv.NEXT_PUBLIC_IS_CAP && customDomain && domainVerified) {
+		} else if (
+			buildEnv.NEXT_PUBLIC_IS_CAP === "true" &&
+			customDomain &&
+			domainVerified
+		) {
 			return `${customDomain}/s/${data.id}`;
 		} else {
 			return `${webUrl}/s/${data.id}`;
@@ -361,7 +369,7 @@ export const ShareHeader = ({
 						size="sm"
 						variant="blue"
 					>
-						Upgrade To Cap Pro
+						Upgrade plan
 					</Button>
 				</div>
 			)}

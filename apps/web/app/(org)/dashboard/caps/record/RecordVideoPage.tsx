@@ -106,7 +106,7 @@ const FaqAccordion = () => {
 		{
 			id: "install",
 			q: "Do I need to install the app?",
-			a: `No. You can record in your browser. For longer recordings, system audio, and advanced editing, use Cap Desktop. The Free plan supports up to ${freeMinutes} minutes per recording in the browser.`,
+			a: `No. You can record in your browser. For system audio and advanced editing, use Cap Desktop. Browser recording supports up to ${freeMinutes} minutes per recording.`,
 		},
 	];
 

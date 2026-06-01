@@ -1439,9 +1439,7 @@ export const useWebRecorder = ({
 			!freePlanAutoStopTriggeredRef.current
 		) {
 			freePlanAutoStopTriggeredRef.current = true;
-			toast.info(
-				"Free plan recordings are limited to 5 minutes. Recording stopped automatically.",
-			);
+			toast.info("Recording stopped automatically at the configured limit.");
 			stopRecording().catch((error) => {
 				console.error("Failed to stop recording at free plan limit", error);
 			});

@@ -202,7 +202,7 @@ export function DashboardContexts({
 					setIsOpen={setInviteDialogOpen}
 				/>
 
-				{buildEnv.NEXT_PUBLIC_IS_CAP && (
+				{buildEnv.NEXT_PUBLIC_IS_CAP === "true" && (
 					<UpgradeModal
 						open={upgradeModalOpen}
 						onOpenChange={setUpgradeModalOpen}

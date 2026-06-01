@@ -427,7 +427,7 @@ export async function importFromLoom({
 	if (!userIsPro(user)) {
 		return {
 			success: false,
-			error: "Importing from Loom requires a Cap Pro subscription.",
+			error: "An upgraded plan is required to import from Loom.",
 		};
 	}
 
@@ -624,7 +624,7 @@ export async function importFromLoomCsv({
 			importedCount: 0,
 			failedCount: 0,
 			results: [],
-			error: "Importing from Loom requires a Cap Pro subscription.",
+			error: "An upgraded plan is required to import from Loom.",
 		};
 	}
 

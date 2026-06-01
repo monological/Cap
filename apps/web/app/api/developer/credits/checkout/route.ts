@@ -106,7 +106,9 @@ app.post(
 							currency: "usd",
 							product:
 								STRIPE_DEVELOPER_CREDITS_PRODUCT_ID[
-									buildEnv.NEXT_PUBLIC_IS_CAP ? "production" : "development"
+									buildEnv.NEXT_PUBLIC_IS_CAP === "true"
+										? "production"
+										: "development"
 								],
 							unit_amount: amountCents,
 						},

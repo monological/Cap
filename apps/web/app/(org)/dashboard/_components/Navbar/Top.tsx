@@ -122,7 +122,7 @@ const Top = () => {
 				</div>
 			</div>
 			<div className="flex gap-4 items-center">
-				{buildEnv.NEXT_PUBLIC_IS_CAP && <ReferButton />}
+				{buildEnv.NEXT_PUBLIC_IS_CAP === "true" && <ReferButton />}
 				<div
 					data-state={toggleNotifications ? "open" : "closed"}
 					ref={bellRef}
@@ -204,14 +204,14 @@ const User = () => {
 				showCondition: true,
 			},
 			{
-				name: "Upgrade to Pro",
+				name: "Upgrade plan",
 				icon: <ArrowUpIcon />,
 				onClick: () => {
 					setMenuOpen(false);
 					setUpgradeModalOpen(true);
 				},
 				iconClassName: "text-amber-400 group-hover:text-amber-500",
-				showCondition: buildEnv.NEXT_PUBLIC_IS_CAP && !user.isPro,
+				showCondition: buildEnv.NEXT_PUBLIC_IS_CAP === "true" && !user.isPro,
 			},
 			{
 				name: "Earn 40% Referral",
@@ -219,7 +219,7 @@ const User = () => {
 				href: "/dashboard/refer",
 				onClick: () => setMenuOpen(false),
 				iconClassName: "text-gray-11 group-hover:text-gray-12",
-				showCondition: buildEnv.NEXT_PUBLIC_IS_CAP,
+				showCondition: buildEnv.NEXT_PUBLIC_IS_CAP === "true",
 			},
 			{
 				name: "Settings",

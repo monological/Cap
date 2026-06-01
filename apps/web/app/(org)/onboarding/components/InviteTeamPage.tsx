@@ -81,7 +81,7 @@ export function InviteTeamPage() {
 			}
 			const data = await response.json();
 			if (data.subscription === true) {
-				toast.success("You are already on the Cap Pro plan");
+				toast.success("You already have all features enabled");
 				return;
 			}
 

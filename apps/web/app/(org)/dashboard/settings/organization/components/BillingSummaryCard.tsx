@@ -1,5 +1,6 @@
 "use client";
 
+import { buildEnv } from "@cap/env";
 import { Button, Card, CardDescription, CardHeader, CardTitle } from "@cap/ui";
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
@@ -15,6 +16,7 @@ import { useDashboardContext } from "@/app/(org)/dashboard/Contexts";
 
 export function BillingSummaryCard() {
 	const { activeOrganization, setUpgradeModalOpen } = useDashboardContext();
+	const isHostedCap = buildEnv.NEXT_PUBLIC_IS_CAP === "true";
 	const router = useRouter();
 	const [billingLoading, setBillingLoading] = useState(false);
 	const organizationId = activeOrganization?.organization.id;
@@ -68,6 +70,19 @@ export function BillingSummaryCard() {
 	}
 
 	if (!subscription) {
+		if (!isHostedCap) {
+			return (
+				<Card className="flex flex-wrap gap-6 justify-between items-center w-full">
+					<CardHeader>
+						<CardTitle>All features enabled</CardTitle>
+						<CardDescription>
+							Billing is disabled on this self-hosted instance.
+						</CardDescription>
+					</CardHeader>
+				</Card>
+			);
+		}
+
 		return (
 			<Card className="flex flex-wrap gap-6 justify-between items-center w-full">
 				<CardHeader>
@@ -82,7 +97,7 @@ export function BillingSummaryCard() {
 					variant="primary"
 					onClick={() => setUpgradeModalOpen(true)}
 				>
-					Upgrade to Pro
+					Upgrade plan
 				</Button>
 			</Card>
 		);

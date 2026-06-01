@@ -19,7 +19,10 @@ export function SettingsNav() {
 			href: "/dashboard/settings/organization/integrations",
 		},
 		{
-			label: buildEnv.NEXT_PUBLIC_IS_CAP ? "Billing & Members" : "Members",
+			label:
+				buildEnv.NEXT_PUBLIC_IS_CAP === "true"
+					? "Billing & Members"
+					: "Members",
 			href: "/dashboard/settings/organization/billing",
 		},
 	] as const;

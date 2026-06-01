@@ -33,7 +33,6 @@ import { cloneElement, type RefObject, useRef, useState } from "react";
 import { NewOrganization } from "@/components/forms/NewOrganization";
 import { SignedImageUrl } from "@/components/SignedImageUrl";
 import { Tooltip } from "@/components/Tooltip";
-import { UsageButton } from "@/components/UsageButton";
 import {
 	canViewOrganizationSettings,
 	getEffectiveOrganizationRole,
@@ -64,7 +63,7 @@ const AdminNavItems = ({ toggleMobileNav }: Props) => {
 	const DEVELOPER_DASHBOARD_ALLOWED_EMAILS: string[] = [];
 
 	const showDeveloperDashboard =
-		buildEnv.NEXT_PUBLIC_IS_CAP &&
+		buildEnv.NEXT_PUBLIC_IS_CAP === "true" &&
 		DEVELOPER_DASHBOARD_ALLOWED_EMAILS.includes(user.email);
 
 	const manageNavigation = [
@@ -371,11 +370,7 @@ const AdminNavItems = ({ toggleMobileNav }: Props) => {
 					<SpacesList toggleMobileNav={() => toggleMobileNav?.()} />
 				</div>
 				<div className="pb-4 mt-auto w-full">
-					<UsageButton
-						toggleMobileNav={() => toggleMobileNav?.()}
-						subscribed={user.isPro}
-					/>
-					{buildEnv.NEXT_PUBLIC_IS_CAP && (
+					{buildEnv.NEXT_PUBLIC_IS_CAP === "true" && (
 						<div className="flex justify-center items-center mt-2">
 							<Link
 								href="/dashboard/refer"
