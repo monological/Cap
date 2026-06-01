@@ -664,31 +664,8 @@ function Inner(props: { initialStore: GeneralSettingsStore | null }) {
 						handleChange("serverUrl", origin);
 					}}
 				/>
-
-				<TelemetryCard
-					value={settings.enableTelemetry !== false}
-					onChange={(v) => handleChange("enableTelemetry", v)}
-				/>
 			</SettingsPageContent>
 		</div>
-	);
-}
-
-function TelemetryCard(props: {
-	value: boolean;
-	onChange: (value: boolean) => void;
-}) {
-	return (
-		<Section title="Privacy">
-			<SectionRows>
-				<ToggleSettingItem
-					label="Share anonymous telemetry"
-					description="Cap uses anonymous telemetry to improve reliability and fix bugs. We never collect recording contents, window titles, file paths, or personal information."
-					value={props.value}
-					onChange={props.onChange}
-				/>
-			</SectionRows>
-		</Section>
 	);
 }
 

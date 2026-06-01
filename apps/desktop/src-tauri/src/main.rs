@@ -78,36 +78,6 @@ fn main() {
     let errors_file_appender =
         tracing_appender::rolling::daily(&logs_dir, "cap-desktop-errors.log");
 
-    let (otel_layer, _tracer) = if cfg!(debug_assertions) {
-        use opentelemetry::trace::TracerProvider;
-        use opentelemetry_otlp::WithExportConfig;
-        use tracing_subscriber::Layer;
-
-        let tracer = opentelemetry_sdk::trace::SdkTracerProvider::builder()
-            .with_batch_exporter(
-                opentelemetry_otlp::SpanExporter::builder()
-                    .with_http()
-                    .with_protocol(opentelemetry_otlp::Protocol::HttpJson)
-                    .build()
-                    .unwrap(),
-            )
-            .with_resource(
-                opentelemetry_sdk::Resource::builder()
-                    .with_service_name("cap-desktop")
-                    .build(),
-            )
-            .build();
-
-        let layer = tracing_opentelemetry::layer()
-            .with_tracer(tracer.tracer("cap-desktop"))
-            .boxed();
-
-        opentelemetry::global::set_tracer_provider(tracer.clone());
-        (Some(layer), Some(tracer))
-    } else {
-        (None, None)
-    };
-
     #[cfg(debug_assertions)]
     let level_filter = tracing_subscriber::filter::LevelFilter::TRACE;
     #[cfg(not(debug_assertions))]
@@ -119,7 +89,6 @@ fn main() {
         ))
         .with(reload_layer)
         .with(level_filter)
-        .with(otel_layer)
         .with(
             tracing_subscriber::fmt::layer()
                 .with_ansi(true)

@@ -176,9 +176,6 @@ importers:
       mp4box:
         specifier: ^0.5.2
         version: 0.5.4
-      posthog-js:
-        specifier: ^1.215.3
-        version: 1.240.0
       solid-js:
         specifier: ^1.9.3
         version: 1.9.6
