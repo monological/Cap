@@ -1,9 +1,8 @@
 import { NODE_ENV } from "@cap/env";
-import { Button, Dialog, DialogContent, Input, LogoBadge } from "@cap/ui";
+import { Button, Dialog, DialogContent, Input } from "@cap/ui";
 import { faArrowLeft, faEnvelope } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Image from "next/image";
-import Link from "next/link";
 import { useParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { useId, useState } from "react";
@@ -50,7 +49,9 @@ export const AuthOverlay: React.FC<AuthOverlayProps> = ({
 					</div>
 				)}
 				<div className="space-y-6">
-					<LogoBadge className="mx-auto w-auto h-12" />
+					<div className="mx-auto text-center text-3xl font-semibold tracking-normal">
+						Cap
+					</div>
 
 					<div className="text-center">
 						<h1 className="text-xl font-semibold">
@@ -87,26 +88,6 @@ export const AuthOverlay: React.FC<AuthOverlayProps> = ({
 								setLastResendTime={setLastResendTime}
 							/>
 						)}
-						<p className="mt-6 text-xs text-center text-gray-9">
-							By entering your email, you acknowledge that you have both read
-							and agree to Cap's{" "}
-							<Link
-								href="/terms"
-								target="_blank"
-								className="text-xs font-semibold text-gray-12 hover:text-blue-300"
-							>
-								Terms of Service
-							</Link>{" "}
-							and{" "}
-							<Link
-								href="/privacy"
-								target="_blank"
-								className="text-xs font-semibold text-gray-12 hover:text-blue-300"
-							>
-								Privacy Policy
-							</Link>
-							.
-						</p>
 					</div>
 				</div>
 			</DialogContent>

@@ -4,7 +4,7 @@ use crate::{
     UploadProgress, VideoUploadInfo,
     api::{self, PresignedS3PutRequest, PresignedS3PutRequestMethod, S3VideoMeta, UploadedPart},
     http_client::{HttpClient, RetryableHttpClient},
-    posthog::{PostHogEvent, async_capture_event},
+    local_events::{LocalEvent, record_event},
     web_api::{AuthedApiError, ManagerExt},
 };
 use async_stream::{stream, try_stream};
@@ -212,10 +212,10 @@ pub async fn upload_video(
 
     emit_upload_complete(app, &video_id);
 
-    async_capture_event(
+    record_event(
         app,
         match &video_result {
-            Ok(meta) => PostHogEvent::MultipartUploadComplete {
+            Ok(meta) => LocalEvent::MultipartUploadComplete {
                 duration: start.elapsed(),
                 length: meta
                     .as_ref()
@@ -225,7 +225,7 @@ pub async fn upload_video(
                     .map(|m| ((m.len() as f64) / 1_000_000.0) as u64)
                     .unwrap_or_default(),
             },
-            Err(err) => PostHogEvent::MultipartUploadFailed {
+            Err(err) => LocalEvent::MultipartUploadFailed {
                 duration: start.elapsed(),
                 error: err.to_string(),
             },
@@ -497,10 +497,10 @@ impl InstantMultipartUpload {
                     realtime_upload_done,
                 )
                 .await;
-                async_capture_event(
+                record_event(
                     &app,
                     match &result {
-                        Ok(meta) => PostHogEvent::MultipartUploadComplete {
+                        Ok(meta) => LocalEvent::MultipartUploadComplete {
                             duration: start.elapsed(),
                             length: meta
                                 .as_ref()
@@ -510,7 +510,7 @@ impl InstantMultipartUpload {
                                 .map(|m| ((m.len() as f64) / 1_000_000.0) as u64)
                                 .unwrap_or_default(),
                         },
-                        Err(err) => PostHogEvent::MultipartUploadFailed {
+                        Err(err) => LocalEvent::MultipartUploadFailed {
                             duration: start.elapsed(),
                             error: err.to_string(),
                         },
@@ -839,15 +839,15 @@ impl SegmentUploader {
                 )
                 .await;
 
-                async_capture_event(
+                record_event(
                     &app,
                     match &result {
-                        Ok(total_bytes) => PostHogEvent::MultipartUploadComplete {
+                        Ok(total_bytes) => LocalEvent::MultipartUploadComplete {
                             duration: start.elapsed(),
                             length: start.elapsed(),
                             size: total_bytes / (1024 * 1024),
                         },
-                        Err(err) => PostHogEvent::MultipartUploadFailed {
+                        Err(err) => LocalEvent::MultipartUploadFailed {
                             duration: start.elapsed(),
                             error: err.to_string(),
                         },

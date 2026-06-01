@@ -306,10 +306,6 @@ const CustomDomainDialog = ({
 		const cleanDomain = (input: string) => {
 			if (!input) return "";
 
-			if (input === "cap.so" || input === "cap.link") {
-				return "";
-			}
-
 			const withoutProtocol = input.replace(/^(https?:\/\/)?(www\.)?/i, "");
 			const parts = withoutProtocol.split("/");
 			const domain = parts[0] || "";

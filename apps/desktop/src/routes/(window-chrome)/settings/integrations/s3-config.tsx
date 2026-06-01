@@ -160,21 +160,7 @@ export default function S3ConfigPage() {
 				<IntegrationConfigHeader title="S3 Config" />
 				<Section
 					title="Configuration"
-					description={
-						<>
-							It should take under 10 minutes to set up and connect your storage
-							bucket to Cap. View the{" "}
-							<a
-								href="https://cap.so/docs/s3-config"
-								target="_blank"
-								class="underline text-gray-12"
-								rel="noopener"
-							>
-								Storage Config Guide
-							</a>{" "}
-							to get started.
-						</>
-					}
+					description="Connect your S3-compatible storage bucket for uploads and sharing."
 				>
 					<SectionCard padded class="custom-scroll">
 						<Suspense

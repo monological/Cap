@@ -36,10 +36,8 @@ import { UpgradeModal } from "@/components/UpgradeModal";
 import { useDashboardContext, useTheme } from "../../Contexts";
 import {
 	ArrowUpIcon,
-	DownloadIcon,
 	HomeIcon,
 	LogoutIcon,
-	MessageCircleMoreIcon,
 	ReferIcon,
 	SettingsGearIcon,
 } from "../AnimatedIcons";
@@ -228,20 +226,6 @@ const User = () => {
 				icon: <SettingsGearIcon />,
 				href: "/dashboard/settings/account",
 				onClick: () => setMenuOpen(false),
-				iconClassName: "text-gray-11 group-hover:text-gray-12",
-				showCondition: true,
-			},
-			{
-				name: "Chat Support",
-				icon: <MessageCircleMoreIcon />,
-				onClick: () => window.open("https://cap.link/discord", "_blank"),
-				iconClassName: "text-gray-11 group-hover:text-gray-12",
-				showCondition: true,
-			},
-			{
-				name: "Download App",
-				icon: <DownloadIcon />,
-				onClick: () => window.open("https://cap.so/download", "_blank"),
 				iconClassName: "text-gray-11 group-hover:text-gray-12",
 				showCondition: true,
 			},

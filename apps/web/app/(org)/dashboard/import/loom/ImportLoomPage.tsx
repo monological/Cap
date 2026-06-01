@@ -788,11 +788,7 @@ export const ImportLoomPage = () => {
 													videos at a time.
 												</p>
 												<p className="mt-1 text-red-10">
-													Split this file into smaller batches or{" "}
-													<a className="underline" href="mailto:hello@cap.so">
-														contact support
-													</a>{" "}
-													to raise the limit.
+													Split this file into smaller batches and try again.
 												</p>
 											</div>
 										</div>

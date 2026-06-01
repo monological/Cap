@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Input, LogoBadge } from "@cap/ui";
+import { Button, Input } from "@cap/ui";
 import { Organisation } from "@cap/web-domain";
 import {
 	faArrowLeft,
@@ -22,7 +22,6 @@ import { trackEvent } from "@/app/utils/analytics";
 import { usePublicEnv } from "@/utils/public-env";
 
 const MotionInput = motion(Input);
-const MotionLogoBadge = motion(LogoBadge);
 const MotionLink = motion(Link);
 const MotionButton = motion(Button);
 
@@ -164,8 +163,12 @@ export function SignupForm() {
 					Back
 				</motion.p>
 			</motion.div>
-			<MotionLink layout="position" className="flex mx-auto size-fit" href="/">
-				<MotionLogoBadge layout="position" className="w-[72px] h-[72px]" />
+			<MotionLink
+				layout="position"
+				className="mx-auto text-4xl font-semibold leading-none text-gray-12"
+				href="/"
+			>
+				Cap
 			</MotionLink>
 			<motion.div
 				layout="position"
@@ -176,14 +179,14 @@ export function SignupForm() {
 					layout="position"
 					className="text-2xl font-semibold text-gray-12"
 				>
-					Sign up to Cap
+					Create account
 				</motion.h1>
 				<motion.p
 					key="subtitle"
 					layout="position"
 					className="text-[16px] text-gray-10"
 				>
-					Beautiful screen recordings, owned by you.
+					Create your video workspace.
 				</motion.p>
 			</motion.div>
 			<motion.div layout="position" className="flex flex-col space-y-3">
@@ -342,29 +345,6 @@ export function SignupForm() {
 							>
 								Log in here
 							</Link>
-						</motion.p>
-						<motion.p
-							layout="position"
-							className="text-xs text-center text-gray-9"
-						>
-							By typing your email and clicking continue, you acknowledge that
-							you have both read and agree to Cap's{" "}
-							<Link
-								href="/terms"
-								target="_blank"
-								className="text-xs font-semibold text-gray-12 hover:text-blue-300"
-							>
-								Terms of Service
-							</Link>{" "}
-							and{" "}
-							<Link
-								href="/privacy"
-								target="_blank"
-								className="text-xs font-semibold text-gray-12 hover:text-blue-300"
-							>
-								Privacy Policy
-							</Link>
-							.
 						</motion.p>
 					</motion.div>
 				</Suspense>

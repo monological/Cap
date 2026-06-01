@@ -35,7 +35,7 @@ vi.mock("@cap/database/schema", () => ({
 }));
 
 vi.mock("@cap/env", () => ({
-	buildEnv: { NEXT_PUBLIC_WEB_URL: "https://cap.so" },
+	buildEnv: { NEXT_PUBLIC_WEB_URL: "https://example.com" },
 }));
 
 vi.mock("@/lib/developer-key-hash", () => ({

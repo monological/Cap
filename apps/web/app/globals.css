@@ -913,14 +913,6 @@ footer a {
 	}
 }
 
-.messenger-markdown > :first-child {
-	margin-top: 0;
-}
-
-.messenger-markdown > :last-child {
-	margin-bottom: 0;
-}
-
 @supports (view-transition-name: none) {
 	::view-transition-old(root),
 	::view-transition-new(root) {

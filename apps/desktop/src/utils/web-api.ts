@@ -36,7 +36,7 @@ export const apiClient = initClient(contract, {
 	api,
 });
 export const licenseApiClient = initClient(licenseContract, {
-	baseUrl: `https://l.cap.so/api`,
+	baseUrl: `${clientEnv.VITE_SERVER_URL}/api`,
 	api,
 });
 
@@ -60,9 +60,6 @@ export async function maybeProtectedHeaders() {
 
 export async function protectedHeaders() {
 	const { authorization } = await maybeProtectedHeaders();
-	if (!authorization)
-		throw new Error(
-			"Please sign in to continue. Alternatively, email hello@cap.so or join our Discord at cap.link/discord",
-		);
+	if (!authorization) throw new Error("Please sign in to continue.");
 	return { authorization };
 }

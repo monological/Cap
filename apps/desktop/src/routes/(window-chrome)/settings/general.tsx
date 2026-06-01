@@ -647,7 +647,7 @@ function Inner(props: { initialStore: GeneralSettingsStore | null }) {
 				/>
 
 				<ServerURLSetting
-					value={settings.serverUrl ?? "https://cap.so"}
+					value={settings.serverUrl ?? "http://localhost:3123"}
 					onChange={async (v) => {
 						const url = new URL(v);
 						const origin = url.origin;

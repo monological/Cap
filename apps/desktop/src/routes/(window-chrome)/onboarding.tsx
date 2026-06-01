@@ -4,7 +4,6 @@ import { getCurrentWindow } from "@tauri-apps/api/window";
 import { ask } from "@tauri-apps/plugin-dialog";
 import { type as ostype } from "@tauri-apps/plugin-os";
 import { relaunch } from "@tauri-apps/plugin-process";
-import * as shell from "@tauri-apps/plugin-shell";
 import { cx } from "cva";
 import {
 	createEffect,
@@ -968,7 +967,7 @@ function ShortcutsStep(props: { active: boolean }) {
 		},
 		{
 			title: "Custom Domain",
-			desc: "Use your own domain for shareable links instead of cap.link",
+			desc: "Use your own domain for shareable links",
 		},
 		{
 			title: "Recording Preferences",
@@ -1072,16 +1071,7 @@ function FaqStep(props: { active: boolean }) {
 			>
 				<FaqItem question="Is Cap free to use?">
 					<p class="text-[13px] text-gray-10 leading-relaxed">
-						Cap is free for personal use. For teams and commercial use, check
-						out our{" "}
-						<button
-							type="button"
-							onClick={() => shell.open("https://cap.so/pricing")}
-							class="text-blue-10 hover:text-blue-11 underline underline-offset-2"
-						>
-							pricing plans
-						</button>
-						.
+						Cap works with your configured server and storage.
 					</p>
 				</FaqItem>
 				<FaqItem question="What's the difference between Instant and Studio?">
@@ -1095,8 +1085,8 @@ function FaqStep(props: { active: boolean }) {
 				<FaqItem question="Where are my recordings stored?">
 					<p class="text-[13px] text-gray-10 leading-relaxed">
 						All recordings are stored locally on your computer. In Instant mode,
-						they're also uploaded to Cap's cloud for easy sharing. You can
-						manage storage in Settings.
+						they're also uploaded to your configured storage for easy sharing.
+						You can manage storage in Settings.
 					</p>
 				</FaqItem>
 				<FaqItem question="Can I change my shortcuts later?">
@@ -1109,22 +1099,10 @@ function FaqStep(props: { active: boolean }) {
 					<p class="text-[13px] text-gray-10 leading-relaxed">
 						In Instant mode, you get a shareable link automatically when you
 						stop recording. In Studio mode, export your edited video and share
-						via Cap's cloud or save locally.
+						via your configured server or save locally.
 					</p>
 				</FaqItem>
 			</div>
-
-			<button
-				type="button"
-				onClick={() => shell.open("https://cap.so/pricing")}
-				class={cx(
-					"flex items-center gap-1.5 text-[13px] text-blue-10 hover:text-blue-11 transition-all duration-500 delay-200",
-					visible() ? "opacity-100" : "opacity-0",
-				)}
-			>
-				View pricing plans
-				<IconLucideExternalLink class="size-3" />
-			</button>
 		</div>
 	);
 }
@@ -1443,7 +1421,7 @@ function InstantMockup(props: { active: boolean }) {
 							<div class="flex items-center gap-2 w-full">
 								<div class="flex-1 flex items-center px-3 py-2 rounded-lg bg-white dark:bg-gray-3 border border-gray-4">
 									<span class="text-[11px] text-gray-11 font-mono">
-										cap.link/m4k92x
+										localhost:3123/s/m4k92x
 									</span>
 								</div>
 								<div
@@ -1924,7 +1902,7 @@ function StartupOverlay(props: {
 						Welcome to Cap
 					</h1>
 					<p class="text-xl md:text-2xl opacity-80 mx-auto drop-shadow-[0_0_20px_rgba(0,0,0,0.2)] whitespace-nowrap">
-						Beautiful screen recordings, owned by you.
+						Record, upload, and share videos.
 					</p>
 				</div>
 

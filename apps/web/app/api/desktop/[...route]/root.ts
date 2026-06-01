@@ -1,14 +1,12 @@
 import { db } from "@cap/database";
 import { getCurrentUser } from "@cap/database/auth/session";
-import { sendEmail } from "@cap/database/emails/config";
-import { Feedback } from "@cap/database/emails/feedback";
 import {
 	authApiKeys,
 	organizationMembers,
 	organizations,
 	users,
 } from "@cap/database/schema";
-import { buildEnv, serverEnv } from "@cap/env";
+import { serverEnv } from "@cap/env";
 import { stripe, userIsPro } from "@cap/utils";
 import { OrganizationBrandingPatchBody } from "@cap/web-api-contract";
 import { ImageUploads } from "@cap/web-backend";
@@ -17,7 +15,6 @@ import { zValidator } from "@hono/zod-validator";
 import { and, eq, isNull, or } from "drizzle-orm";
 import { Effect, Option } from "effect";
 import { type Context, Hono } from "hono";
-import { PostHog } from "posthog-node";
 import type Stripe from "stripe";
 import { z } from "zod";
 import { runPromise } from "@/lib/server";
@@ -397,31 +394,15 @@ app.post(
 		}),
 	),
 	async (c) => {
-		const { feedback, os, version } = c.req.valid("form");
-		const userEmail = c.get("user").email;
+		c.req.valid("form");
 
-		try {
-			await sendEmail({
-				email: "hello@cap.so",
-				subject: `New Feedback from ${userEmail}`,
-				react: Feedback({
-					userEmail,
-					feedback,
-					os,
-					version,
-				}),
-				cc: userEmail,
-				replyTo: userEmail,
-				fromOverride: "Richie from Cap <richie@send.cap.so>",
-			});
-
-			return c.json({
-				success: true,
-				message: "Feedback submitted successfully",
-			});
-		} catch (_error) {
-			return c.json({ error: "Failed to submit feedback" }, { status: 500 });
-		}
+		return c.json(
+			{
+				success: false,
+				message: "Feedback collection is not configured.",
+			},
+			{ status: 501 },
+		);
 	},
 );
 
@@ -718,33 +699,13 @@ app.post(
 			line_items: [{ price: priceId, quantity: 1 }],
 			mode: "subscription",
 			success_url: `${serverEnv().WEB_URL}/dashboard/caps?upgrade=true`,
-			cancel_url: `${serverEnv().WEB_URL}/pricing`,
+			cancel_url: `${serverEnv().WEB_URL}/dashboard/caps`,
 			allow_promotion_codes: true,
 			metadata: { platform: "desktop", dubCustomerId: user.id },
 		});
 
 		if (checkoutSession.url) {
 			console.log("[POST] Checkout session created successfully");
-
-			try {
-				const ph = new PostHog(buildEnv.NEXT_PUBLIC_POSTHOG_KEY || "", {
-					host: buildEnv.NEXT_PUBLIC_POSTHOG_HOST || "",
-				});
-
-				ph.capture({
-					distinctId: user.id,
-					event: "checkout_started",
-					properties: {
-						price_id: priceId,
-						quantity: 1,
-						platform: "desktop",
-					},
-				});
-
-				await ph.shutdown();
-			} catch (e) {
-				console.error("Failed to capture checkout_started in PostHog", e);
-			}
 
 			return c.json({ url: checkoutSession.url });
 		}

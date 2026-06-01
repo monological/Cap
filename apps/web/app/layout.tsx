@@ -8,19 +8,10 @@ import localFont from "next/font/local";
 import type { PropsWithChildren } from "react";
 import { SonnerToaster } from "@/components/SonnerToastProvider";
 import { runPromise } from "@/lib/server";
-import { getBootstrapData } from "@/utils/getBootstrapData";
 import { PublicEnvContext } from "@/utils/public-env";
 import { AuthContextProvider } from "./Layout/AuthContext";
 import { resolveCurrentUser } from "./Layout/current-user";
-import { GTag } from "./Layout/GTag";
-import { MetaPixel } from "./Layout/MetaPixel";
-import { PosthogIdentify } from "./Layout/PosthogIdentify";
-import { PurchaseTracker } from "./Layout/PurchaseTracker";
-import {
-	PostHogProvider,
-	ReactQueryProvider,
-	SessionProvider,
-} from "./Layout/providers";
+import { ReactQueryProvider, SessionProvider } from "./Layout/providers";
 import { StripeContextProvider } from "./Layout/StripeContext";
 //@ts-expect-error
 import { script } from "./themeScript";
@@ -60,17 +51,23 @@ const defaultFont = localFont({
 	],
 });
 
+const appName = "Cap";
+const appDescription = "Self-hosted video recording and sharing.";
+const appUrl = buildEnv.NEXT_PUBLIC_WEB_URL || "http://localhost:3000";
+
 export const metadata: Metadata = {
-	title: "Cap — Beautiful screen recordings, owned by you.",
-	description:
-		"Cap is the open source alternative to Loom. Lightweight, powerful, and cross-platform. Record and share in seconds.",
+	title: appName,
+	description: appDescription,
 	openGraph: {
-		title: "Cap — Beautiful screen recordings, owned by you.",
-		description:
-			"Cap is the open source alternative to Loom. Lightweight, powerful, and cross-platform. Record and share in seconds.",
+		title: appName,
+		description: appDescription,
 		type: "website",
-		url: "https://cap.so",
-		images: ["https://cap.so/og.png"],
+		url: appUrl,
+	},
+	twitter: {
+		card: "summary",
+		title: appName,
+		description: appDescription,
 	},
 };
 
@@ -78,8 +75,6 @@ export const dynamic = "force-dynamic";
 
 export default ({ children }: PropsWithChildren) =>
 	Effect.gen(function* () {
-		const bootstrapData = yield* Effect.promise(getBootstrapData);
-
 		return (
 			<html className={defaultFont.className} lang="en">
 				<head>
@@ -111,36 +106,30 @@ export default ({ children }: PropsWithChildren) =>
 						dangerouslySetInnerHTML={{ __html: `(${script.toString()})()` }}
 					/>
 					<TooltipPrimitive.Provider>
-						<PostHogProvider bootstrapData={bootstrapData}>
-							<AuthContextProvider user={runPromise(resolveCurrentUser)}>
-								<SessionProvider>
-									<StripeContextProvider
-										plans={
-											serverEnv().VERCEL_ENV === "production"
-												? STRIPE_PLAN_IDS.production
-												: STRIPE_PLAN_IDS.development
-										}
+						<AuthContextProvider user={runPromise(resolveCurrentUser)}>
+							<SessionProvider>
+								<StripeContextProvider
+									plans={
+										serverEnv().VERCEL_ENV === "production"
+											? STRIPE_PLAN_IDS.production
+											: STRIPE_PLAN_IDS.development
+									}
+								>
+									<PublicEnvContext
+										value={{
+											webUrl: buildEnv.NEXT_PUBLIC_WEB_URL,
+											workosAuthAvailable: !!serverEnv().WORKOS_CLIENT_ID,
+											googleAuthAvailable: !!serverEnv().GOOGLE_CLIENT_ID,
+										}}
 									>
-										<PublicEnvContext
-											value={{
-												webUrl: buildEnv.NEXT_PUBLIC_WEB_URL,
-												workosAuthAvailable: !!serverEnv().WORKOS_CLIENT_ID,
-												googleAuthAvailable: !!serverEnv().GOOGLE_CLIENT_ID,
-											}}
-										>
-											<ReactQueryProvider>
-												<SonnerToaster />
-												<main className="w-full">{children}</main>
-												<PosthogIdentify />
-												<MetaPixel />
-												<GTag />
-												<PurchaseTracker />
-											</ReactQueryProvider>
-										</PublicEnvContext>
-									</StripeContextProvider>
-								</SessionProvider>
-							</AuthContextProvider>
-						</PostHogProvider>
+										<ReactQueryProvider>
+											<SonnerToaster />
+											<main className="w-full">{children}</main>
+										</ReactQueryProvider>
+									</PublicEnvContext>
+								</StripeContextProvider>
+							</SessionProvider>
+						</AuthContextProvider>
 					</TooltipPrimitive.Provider>
 				</body>
 			</html>

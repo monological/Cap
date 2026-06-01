@@ -33,7 +33,7 @@ export const EmptyCapState: React.FC<EmptyCapStateProps> = ({ userName }) => {
 				</div>
 				<div className="flex flex-wrap gap-3 justify-center items-center mt-4">
 					<Button
-						href="/download"
+						href="/api/download"
 						className="flex relative gap-2 justify-center items-center"
 						variant="primary"
 					>

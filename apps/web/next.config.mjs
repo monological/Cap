@@ -64,12 +64,6 @@ const nextConfig = {
 				port: "",
 				pathname: "**",
 			},
-			{
-				protocol: "https",
-				hostname: "l.cap.so",
-				port: "",
-				pathname: "**",
-			},
 			process.env.NODE_ENV === "development" && {
 				protocol: "http",
 				hostname: "localhost",
@@ -78,50 +72,37 @@ const nextConfig = {
 			},
 		].filter(Boolean),
 	},
-	async rewrites() {
-		return [
-			{
-				source: "/r/:path*",
-				destination: "https://dub.cap.link/:path*",
-			},
-			{
-				source: "/api/commercial/:path*",
-				destination: "https://l.cap.so/api/commercial/:path*",
-			},
-			{
-				source: "/s/:videoId",
-				destination: "/s/:videoId",
-				has: [
-					{
-						type: "host",
-						value: "(?!cap.so|cap.link).*",
-					},
-				],
-			},
-		];
-	},
 	async redirects() {
 		return [
 			{
 				source: "/roadmap",
-				destination:
-					"https://capso.notion.site/7aac740edeee49b5a23be901a7cb734e?v=9d4a3bf3d72d488cad9b899ab73116a1",
+				destination: "/",
 				permanent: true,
 			},
 			{
 				source: "/updates",
-				destination: "/blog",
+				destination: "/",
 				permanent: true,
 			},
 			{
 				source: "/updates/:slug",
-				destination: "/blog/:slug",
+				destination: "/",
 				permanent: true,
 			},
 			{
-				source: "/docs/s3-config",
-				destination: "/docs",
-				permanent: true,
+				source: "/pricing",
+				destination: "/",
+				permanent: false,
+			},
+			{
+				source: "/docs/:path*",
+				destination: "/",
+				permanent: false,
+			},
+			{
+				source: "/download/:path*",
+				destination: "/",
+				permanent: false,
 			},
 		];
 	},

@@ -312,9 +312,7 @@ export function AnalyticsDashboard() {
 										className="mt-5 w-full max-w-sm h-14 text-lg"
 										disabled={proCheckoutMutation.isPending}
 									>
-										{proCheckoutMutation.isPending
-											? "Loading..."
-											: "Upgrade to Cap Pro"}
+										{proCheckoutMutation.isPending ? "Loading..." : "Upgrade"}
 									</Button>
 								</div>
 							</div>

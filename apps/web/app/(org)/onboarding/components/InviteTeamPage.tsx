@@ -11,8 +11,10 @@ import { type MouseEvent, startTransition, useId, useState } from "react";
 import { toast } from "sonner";
 import { useStripeContext } from "@/app/Layout/StripeContext";
 import { useEffectMutation, useRpcClient } from "@/lib/EffectRuntime";
-import { homepageCopy } from "../../../../data/homepage-copy";
 import { Base } from "./Base";
+
+const PRO_ANNUAL_PRICE_PER_USER = 8.16;
+const PRO_MONTHLY_PRICE_PER_USER = 12;
 
 export function InviteTeamPage() {
 	const billingCycleId = useId();
@@ -22,15 +24,9 @@ export function InviteTeamPage() {
 	const router = useRouter();
 	const rpc = useRpcClient();
 
-	const CAP_PRO_ANNUAL_PRICE_PER_USER = homepageCopy.pricing.pro.pricing.annual;
-	const CAP_PRO_MONTHLY_PRICE_PER_USER =
-		homepageCopy.pricing.pro.pricing.monthly;
-
 	const currentTotalPrice =
 		users *
-		(isAnnually
-			? CAP_PRO_ANNUAL_PRICE_PER_USER
-			: CAP_PRO_MONTHLY_PRICE_PER_USER);
+		(isAnnually ? PRO_ANNUAL_PRICE_PER_USER : PRO_MONTHLY_PRICE_PER_USER);
 	const billingCycleText = isAnnually
 		? "per user, billed annually"
 		: "per user, billed monthly";
@@ -126,7 +122,7 @@ export function InviteTeamPage() {
 					<p className="text-base text-gray-10">
 						or,{" "}
 						<NumberFlow
-							value={CAP_PRO_MONTHLY_PRICE_PER_USER * users}
+							value={PRO_MONTHLY_PRICE_PER_USER * users}
 							className="text-sm tabular-nums lg:text-base text-gray-12"
 							format={{
 								notation: "compact",
@@ -150,7 +146,7 @@ export function InviteTeamPage() {
 					<p className="text-base text-gray-10">
 						or,{" "}
 						<NumberFlow
-							value={CAP_PRO_ANNUAL_PRICE_PER_USER * users}
+							value={PRO_ANNUAL_PRICE_PER_USER * users}
 							className="text-sm tabular-nums lg:text-base text-gray-12"
 							format={{
 								notation: "compact",
@@ -210,7 +206,7 @@ export function InviteTeamPage() {
 								!isAnnually ? "text-gray-12" : "text-gray-10",
 							)}
 						>
-							{homepageCopy.pricing.pro.labels.monthly}
+							Monthly
 						</span>
 						<Switch
 							checked={isAnnually}
@@ -225,7 +221,7 @@ export function InviteTeamPage() {
 								isAnnually ? "text-gray-12" : "text-gray-10",
 							)}
 						>
-							{homepageCopy.pricing.pro.labels.annually}
+							Annual (save 32%)
 						</span>
 					</div>
 				</div>

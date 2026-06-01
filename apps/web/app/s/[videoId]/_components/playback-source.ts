@@ -90,7 +90,7 @@ export function detectCrossOriginSupport(
 ): boolean {
 	if (probeWasRedirected) return true;
 	try {
-		const hostname = new URL(url, "https://cap.so").hostname;
+		const hostname = new URL(url, "http://localhost").hostname;
 		const isR2OrS3 =
 			hostname.includes("r2.cloudflarestorage.com") ||
 			hostname.includes("s3.amazonaws.com") ||

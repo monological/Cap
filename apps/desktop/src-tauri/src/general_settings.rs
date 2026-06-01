@@ -207,8 +207,6 @@ pub struct GeneralSettingsStore {
     #[serde(default = "default_true")]
     pub has_completed_onboarding: bool,
     #[serde(default)]
-    pub enable_telemetry: bool,
-    #[serde(default)]
     pub out_of_process_muxer: bool,
 }
 
@@ -243,7 +241,7 @@ fn default_transcription_hints() -> Vec<String> {
 
 fn default_server_url() -> String {
     std::option_env!("VITE_SERVER_URL")
-        .unwrap_or("https://cap.so")
+        .unwrap_or("http://localhost:3123")
         .to_string()
 }
 
@@ -292,7 +290,6 @@ impl Default for GeneralSettingsStore {
             camera_window_position: None,
             camera_window_positions_by_monitor_name: BTreeMap::new(),
             has_completed_onboarding: false,
-            enable_telemetry: false,
             out_of_process_muxer: false,
         }
     }
@@ -331,8 +328,6 @@ impl GeneralSettingsStore {
         update(&mut settings);
         store.set("general_settings", json!(settings));
         store.save().map_err(|e| e.to_string())?;
-
-        crate::posthog::set_telemetry_enabled(settings.enable_telemetry);
 
         #[cfg(target_os = "macos")]
         crate::permissions::sync_macos_dock_visibility(app);
@@ -383,7 +378,6 @@ pub fn init(app: &AppHandle) {
     };
 
     append_missing_default_excluded_windows(&mut store.excluded_windows);
-    crate::posthog::set_telemetry_enabled(store.enable_telemetry);
     register_bundled_muxer_binary(app);
 
     if let Err(e) = store.save(app) {

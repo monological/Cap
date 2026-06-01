@@ -1,3 +1,4 @@
+import { serverEnv } from "@cap/env";
 import type { MetadataRoute } from "next";
 
 export default async function robots(): Promise<MetadataRoute.Robots> {
@@ -16,6 +17,6 @@ export default async function robots(): Promise<MetadataRoute.Robots> {
 				],
 			},
 		],
-		sitemap: "https://cap.so/sitemap.xml",
+		sitemap: `${serverEnv().WEB_URL}/sitemap.xml`,
 	};
 }

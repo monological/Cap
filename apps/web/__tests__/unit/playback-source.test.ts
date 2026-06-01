@@ -74,7 +74,7 @@ describe("detectCrossOriginSupport", () => {
 describe("canPlayRawContentType", () => {
 	it("treats mp4 raw uploads as playable without probing browser support", () => {
 		expect(
-			canPlayRawContentType("video/mp4", "https://cap.so/raw-upload.mp4"),
+			canPlayRawContentType("video/mp4", "https://example.com/raw-upload.mp4"),
 		).toBe(true);
 	});
 
@@ -82,7 +82,7 @@ describe("canPlayRawContentType", () => {
 		expect(
 			canPlayRawContentType(
 				"video/webm;codecs=vp9,opus",
-				"https://cap.so/raw-upload.webm",
+				"https://example.com/raw-upload.webm",
 				() => ({
 					canPlayType: vi.fn().mockReturnValue("probably"),
 				}),
@@ -91,7 +91,7 @@ describe("canPlayRawContentType", () => {
 		expect(
 			canPlayRawContentType(
 				"video/webm;codecs=vp9,opus",
-				"https://cap.so/raw-upload.webm",
+				"https://example.com/raw-upload.webm",
 				() => ({
 					canPlayType: vi.fn().mockReturnValue(""),
 				}),
@@ -138,7 +138,7 @@ describe("resolvePlaybackSource", () => {
 				createResponse("/api/playlist?videoType=mp4&_t=200", { status: 404 }),
 			)
 			.mockResolvedValueOnce(
-				createResponse("https://cap.so/raw-upload.mp4", {
+				createResponse("https://example.com/raw-upload.mp4", {
 					status: 206,
 					headers: { "content-type": "video/mp4" },
 					redirected: true,
@@ -168,7 +168,7 @@ describe("resolvePlaybackSource", () => {
 			},
 		);
 		expect(result).toEqual({
-			url: "https://cap.so/raw-upload.mp4",
+			url: "https://example.com/raw-upload.mp4",
 			type: "raw",
 			supportsCrossOrigin: true,
 		});
@@ -176,7 +176,7 @@ describe("resolvePlaybackSource", () => {
 
 	it("can prefer the raw preview after the MP4 source fails in the player", async () => {
 		const fetchImpl = vi.fn<typeof fetch>().mockResolvedValueOnce(
-			createResponse("https://cap.so/raw-upload.webm", {
+			createResponse("https://example.com/raw-upload.webm", {
 				status: 206,
 				headers: { "content-type": "video/webm;codecs=vp9,opus" },
 				redirected: true,
@@ -202,7 +202,7 @@ describe("resolvePlaybackSource", () => {
 			},
 		);
 		expect(result).toEqual({
-			url: "https://cap.so/raw-upload.webm",
+			url: "https://example.com/raw-upload.webm",
 			type: "raw",
 			supportsCrossOrigin: false,
 		});
@@ -215,7 +215,7 @@ describe("resolvePlaybackSource", () => {
 				createResponse("/api/playlist?videoType=mp4&_t=300", { status: 404 }),
 			)
 			.mockResolvedValueOnce(
-				createResponse("https://cap.so/raw-upload.webm", {
+				createResponse("https://example.com/raw-upload.webm", {
 					status: 206,
 					headers: { "content-type": "video/webm;codecs=vp9,opus" },
 					redirected: true,
@@ -273,7 +273,7 @@ describe("resolvePlaybackSource", () => {
 			);
 
 		const result = await resolvePlaybackSource({
-			videoSrc: "https://cap.so/api/playlist?videoType=mp4",
+			videoSrc: "https://example.com/api/playlist?videoType=mp4",
 			rawFallbackSrc: "/api/playlist?videoType=raw-preview",
 			fetchImpl,
 			now: () => 400,

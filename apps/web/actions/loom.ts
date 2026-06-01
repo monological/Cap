@@ -15,8 +15,8 @@ import {
 	videos,
 	videoUploads,
 } from "@cap/database/schema";
-import { buildEnv, NODE_ENV, serverEnv } from "@cap/env";
-import { dub, userIsPro } from "@cap/utils";
+import { NODE_ENV, serverEnv } from "@cap/env";
+import { userIsPro } from "@cap/utils";
 import { Storage } from "@cap/web-backend";
 import {
 	type Organisation,
@@ -87,10 +87,13 @@ async function createLoomImportRateLimitCheck(userId: User.UserId) {
 	if (NODE_ENV !== "production") return async () => false;
 
 	const headersList = await headers();
-	const request = new Request("https://cap.so/api/loom-import-rate-limit", {
-		method: "POST",
-		headers: headersList,
-	});
+	const request = new Request(
+		`${serverEnv().WEB_URL}/api/loom-import-rate-limit`,
+		{
+			method: "POST",
+			headers: headersList,
+		},
+	);
 
 	return async () => {
 		const { rateLimited } = await checkRateLimit(LOOM_IMPORT_RATE_LIMIT_ID, {
@@ -394,16 +397,6 @@ async function importLoomVideoForOwner({
 	});
 
 	const rawFileKey = `${ownerId}/${videoId}/raw-upload.mp4`;
-
-	if (buildEnv.NEXT_PUBLIC_IS_CAP && NODE_ENV === "production") {
-		await dub()
-			.links.create({
-				url: `${serverEnv().WEB_URL}/s/${videoId}`,
-				domain: "cap.link",
-				key: videoId,
-			})
-			.catch(() => {});
-	}
 
 	await start(importLoomVideoWorkflow, [
 		{

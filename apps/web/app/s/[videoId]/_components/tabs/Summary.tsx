@@ -152,17 +152,16 @@ export const Summary: React.FC<SummaryProps> = ({
 							Unlock Cap AI
 						</h3>
 						<p className="mb-4 text-sm leading-relaxed text-gray-600">
-							Upgrade to Cap Pro to access AI-powered features including
-							automatic titles, video summaries, and intelligent chapter
-							generation.
+							Upgrade to access AI-powered features including automatic titles,
+							video summaries, and intelligent chapter generation.
 						</p>
 						<Button
-							href="/pricing"
+							href="/dashboard/settings/organization"
 							variant="primary"
 							size="sm"
 							className="mx-auto"
 						>
-							Upgrade to Cap Pro
+							Upgrade
 						</Button>
 					</div>
 				</div>

@@ -373,9 +373,7 @@ export async function sendFirstViewEmail(
 			viewerName = viewer?.name || viewer?.email || "Someone";
 		}
 
-		const videoUrl = buildEnv.NEXT_PUBLIC_IS_CAP
-			? `https://cap.link/${params.videoId}`
-			: `${serverEnv().WEB_URL}/s/${params.videoId}`;
+		const videoUrl = `${serverEnv().WEB_URL}/s/${params.videoId}`;
 
 		const displayName = videoWithOwner.videoName || "Untitled Video";
 

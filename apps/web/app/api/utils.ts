@@ -125,7 +125,7 @@ export const corsMiddleware = cors({
 	origin: allowedOrigins,
 	credentials: true,
 	allowMethods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
-	allowHeaders: ["Content-Type", "Authorization", "sentry-trace", "baggage"],
+	allowHeaders: ["Content-Type", "Authorization"],
 });
 
 export const developerSdkCors = cors({

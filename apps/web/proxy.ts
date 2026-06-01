@@ -11,8 +11,6 @@ const addHttps = (s?: string) => {
 };
 
 const mainOrigins = [
-	"https://cap.so",
-	"https://cap.link",
 	"http://localhost",
 	serverEnv().WEB_URL,
 	addHttps(serverEnv().VERCEL_URL_HOST),
@@ -27,10 +25,7 @@ export async function proxy(request: NextRequest) {
 	if (path.startsWith("/login")) {
 		const response = NextResponse.next();
 		response.headers.set("X-Frame-Options", "SAMEORIGIN");
-		response.headers.set(
-			"Content-Security-Policy",
-			"frame-ancestors https://cap.so",
-		);
+		response.headers.set("Content-Security-Policy", "frame-ancestors 'self'");
 		return response;
 	}
 
@@ -47,9 +42,6 @@ export async function proxy(request: NextRequest) {
 				path.startsWith("/login") ||
 				path.startsWith("/signup") ||
 				path.startsWith("/invite") ||
-				path.startsWith("/self-hosting") ||
-				path.startsWith("/download") ||
-				path.startsWith("/terms") ||
 				path.startsWith("/verify-otp")
 			) &&
 			process.env.NODE_ENV !== "development"

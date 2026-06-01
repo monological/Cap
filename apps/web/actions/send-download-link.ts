@@ -2,6 +2,7 @@
 
 import { sendEmail } from "@cap/database/emails/config";
 import { DownloadLink } from "@cap/database/emails/download-link";
+import { serverEnv } from "@cap/env";
 import { checkRateLimit } from "@vercel/firewall";
 import { headers } from "next/headers";
 
@@ -33,7 +34,7 @@ export async function sendDownloadLink(email: string) {
 	}
 
 	const headersList = await headers();
-	const request = new Request("https://cap.so/api/send-download-link", {
+	const request = new Request(`${serverEnv().WEB_URL}/api/send-download-link`, {
 		method: "POST",
 		headers: headersList,
 	});

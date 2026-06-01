@@ -1,12 +1,18 @@
+import { buildEnv } from "@cap/env";
+import type { Testimonial } from "@/data/testimonials";
+import { testimonials as allTestimonials } from "@/data/testimonials";
+
+const siteUrl = buildEnv.NEXT_PUBLIC_WEB_URL || "http://localhost:3000";
+
 export const createOrganizationSchema = () => ({
 	"@context": "https://schema.org",
 	"@type": "Organization",
-	"@id": "https://cap.so/#organization",
+	"@id": `${siteUrl}/#organization`,
 	name: "Cap",
-	url: "https://cap.so",
+	url: siteUrl,
 	logo: {
 		"@type": "ImageObject",
-		url: "https://cap.so/cap-logo.png",
+		url: `${siteUrl}/cap-logo.png`,
 		width: 512,
 		height: 512,
 	},
@@ -18,28 +24,19 @@ export const createOrganizationSchema = () => ({
 		"https://x.com/cap",
 		"https://www.producthunt.com/products/cap-3",
 	],
-	contactPoint: {
-		"@type": "ContactPoint",
-		email: "hello@cap.so",
-		contactType: "customer service",
-	},
 });
 
 export const createWebSiteSchema = () => ({
 	"@context": "https://schema.org",
 	"@type": "WebSite",
-	"@id": "https://cap.so/#website",
-	url: "https://cap.so",
+	"@id": `${siteUrl}/#website`,
+	url: siteUrl,
 	name: "Cap",
-	description:
-		"Beautiful screen recordings, owned by you. The open source alternative to Loom.",
+	description: "Self-hosted video recording and sharing.",
 	publisher: {
-		"@id": "https://cap.so/#organization",
+		"@id": `${siteUrl}/#organization`,
 	},
 });
-
-import type { Testimonial } from "@/data/testimonials";
-import { testimonials as allTestimonials } from "@/data/testimonials";
 
 export const createSoftwareApplicationSchema = (
 	testimonials?: readonly Testimonial[],
@@ -76,18 +73,18 @@ export const createSoftwareApplicationSchema = (
 	return {
 		"@context": "https://schema.org",
 		"@type": "SoftwareApplication",
-		"@id": "https://cap.so/#software",
+		"@id": `${siteUrl}/#software`,
 		name: "Cap",
 		applicationCategory: "MultimediaApplication",
 		operatingSystem: ["macOS", "Windows"],
 		description:
 			"Cap is a powerful, open-source screen recording software that offers instant sharing, studio mode, and privacy-focused features.",
-		url: "https://cap.so",
-		downloadUrl: "https://cap.so/download",
+		url: siteUrl,
+		downloadUrl: siteUrl,
 		screenshot: [
 			{
 				"@type": "ImageObject",
-				url: "https://cap.so/og.png",
+				url: `${siteUrl}/og.png`,
 				caption: "Cap screen recorder interface",
 			},
 		],
@@ -133,7 +130,7 @@ export const createSoftwareApplicationSchema = (
 		},
 		review: reviews,
 		creator: {
-			"@id": "https://cap.so/#organization",
+			"@id": `${siteUrl}/#organization`,
 		},
 	};
 };
@@ -168,7 +165,7 @@ export const createVideoObjectSchema = (video: {
 	duration: video.duration || "PT2M",
 	embedUrl: video.embedUrl,
 	publisher: {
-		"@id": "https://cap.so/#organization",
+		"@id": `${siteUrl}/#organization`,
 	},
 });
 
@@ -275,9 +272,9 @@ export const createLocalBusinessSchema = () => ({
 	"@context": "https://schema.org",
 	"@type": "LocalBusiness",
 	name: "Cap",
-	image: "https://cap.so/og.png",
-	"@id": "https://cap.so",
-	url: "https://cap.so",
+	image: `${siteUrl}/og.png`,
+	"@id": siteUrl,
+	url: siteUrl,
 	priceRange: "$0-$8.16",
 	address: {
 		"@type": "PostalAddress",

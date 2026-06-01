@@ -1,6 +1,5 @@
 "use client";
 
-import { LogoBadge } from "@cap/ui";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import clsx from "clsx";
@@ -32,7 +31,9 @@ export const Base = ({
 				</div>
 			)}
 			<a href="/">
-				<LogoBadge className="mx-auto w-auto h-12" />
+				<div className="mx-auto text-center text-3xl font-semibold tracking-normal">
+					Cap
+				</div>
 			</a>
 			<div className="flex flex-col justify-center items-center space-y-1 text-center">
 				<h2 className="text-2xl font-semibold text-gray-12">{title}</h2>

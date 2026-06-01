@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, LogoBadge } from "@cap/ui";
+import { Button } from "@cap/ui";
 import { useDetectPlatform } from "hooks/useDetectPlatform";
 import { Clapperboard, Zap } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -40,11 +40,13 @@ export function DownloadPage() {
 		<div className="flex flex-col gap-12 justify-center items-center min-h-fit lg:gap-20">
 			<div className="space-y-10">
 				<div className="flex flex-col gap-6 justify-center items-center">
-					<LogoBadge className="mx-auto w-auto h-12" />
+					<div className="mx-auto text-center text-3xl font-semibold tracking-normal">
+						Cap
+					</div>
 					<div className="space-y-1 text-center">
 						<h1 className="text-3xl font-medium text-gray-12">Download Cap</h1>
 						<p className="text-lg text-center text-gray-11 text-pretty">
-							Start recording beautiful screen recordings today
+							Start recording and sharing videos today
 						</p>
 					</div>
 				</div>

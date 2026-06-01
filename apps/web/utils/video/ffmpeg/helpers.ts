@@ -16,10 +16,7 @@ export function generateM3U8Playlist(
 	let m3u8Content = baseM3U8Content;
 	urls.forEach((segment) => {
 		const { url, duration } = segment;
-		m3u8Content += `#EXTINF:${duration},\n${url.replace(
-			"https://capso.s3.us-east-1.amazonaws.com",
-			"https://v.cap.so",
-		)}\n`;
+		m3u8Content += `#EXTINF:${duration},\n${url}\n`;
 	});
 
 	m3u8Content += "#EXT-X-ENDLIST";

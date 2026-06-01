@@ -43,7 +43,6 @@ import {
 } from "effect";
 import { cookies } from "next/headers";
 import { allowedOrigins } from "@/utils/cors";
-import { layerTracer } from "./tracing";
 
 const CookiePasswordAttachmentLive = Layer.effect(
 	Video.VideoPasswordAttachment,
@@ -108,7 +107,7 @@ const WorkflowRpcLive = Layer.unwrapScoped(
 
 		return Layer.succeed(Workflows.RpcClient, client);
 	}),
-);
+).pipe(Layer.orDie);
 
 export const Dependencies = Layer.mergeAll(
 	S3Buckets.Default,
@@ -126,7 +125,6 @@ export const Dependencies = Layer.mergeAll(
 	AwsCredentials.Default,
 	ImageUploads.Default,
 	WorkflowRpcLive,
-	layerTracer,
 ).pipe(
 	Layer.provideMerge(
 		Layer.mergeAll(
@@ -169,7 +167,7 @@ const cors = HttpApiBuilder.middlewareCors({
 	allowedOrigins,
 	credentials: true,
 	allowedMethods: ["GET", "HEAD", "POST", "OPTIONS"],
-	allowedHeaders: ["Content-Type", "Authorization", "sentry-trace", "baggage"],
+	allowedHeaders: ["Content-Type", "Authorization"],
 });
 
 export const apiToHandler = (
@@ -187,7 +185,6 @@ export const apiToHandler = (
 		Layer.provide(
 			HttpApiBuilder.middleware(Effect.provide(CookiePasswordAttachmentLive)),
 		),
-		Layer.provide(layerTracer),
 		Layer.provideMerge(Dependencies),
 		HttpApiBuilder.toWebHandler,
 		(v) => (req: Request) => v.handler(req),

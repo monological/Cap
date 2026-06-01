@@ -1,7 +1,6 @@
 "use client";
 
 import {
-	LogoBadge,
 	Table,
 	TableBody,
 	TableCell,
@@ -289,7 +288,11 @@ const getIconForRow = (
 			);
 		}
 		case "cap":
-			return <LogoBadge className="size-4" />;
+			return (
+				<span className="text-[10px] font-semibold tracking-normal text-gray-12">
+					Cap
+				</span>
+			);
 		default:
 			return null;
 	}

@@ -20,7 +20,8 @@ export type {
 	RecorderEventMap,
 };
 
-const DEFAULT_API_BASE = "https://cap.so";
+const DEFAULT_API_BASE =
+	typeof window !== "undefined" ? window.location.origin : "";
 
 type EventHandler<K extends keyof RecorderEventMap> = (
 	event: RecorderEventMap[K],

@@ -21,16 +21,16 @@ export async function register() {
 			await runMigrations();
 		} catch (error) {
 			console.error(
-				`🚨 Error triggering migrations (attempt ${retryCount + 1}):`,
+				`Error triggering migrations (attempt ${retryCount + 1}):`,
 				error,
 			);
 			if (retryCount < maxRetries - 1) {
 				console.log(
-					`🔄 Retrying in 5 seconds... (${retryCount + 1}/${maxRetries})`,
+					`Retrying in 5 seconds... (${retryCount + 1}/${maxRetries})`,
 				);
 				setTimeout(() => triggerMigrations(retryCount + 1, maxRetries), 5000);
 			} else {
-				console.error(`🚨 All ${maxRetries} migration attempts failed.`);
+				console.error(`All ${maxRetries} migration attempts failed.`);
 				process.exit(1); // Exit with error code if all attempts fail
 			}
 		}

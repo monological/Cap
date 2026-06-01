@@ -1,4 +1,4 @@
-import { buildEnv, serverEnv } from "@cap/env";
+import { serverEnv } from "@cap/env";
 import type { JSXElementConstructor, ReactElement } from "react";
 import { Resend } from "resend";
 
@@ -35,10 +35,8 @@ export const sendEmail = async ({
 	let from: string;
 
 	if (fromOverride) from = fromOverride;
-	else if (marketing) from = "Richie from Cap <richie@send.cap.so>";
-	else if (buildEnv.NEXT_PUBLIC_IS_CAP)
-		from = "Cap Auth <no-reply@auth.cap.so>";
-	else from = `auth@${serverEnv().RESEND_FROM_DOMAIN}`;
+	else if (marketing) from = `Cap <hello@${serverEnv().RESEND_FROM_DOMAIN}>`;
+	else from = `Cap <auth@${serverEnv().RESEND_FROM_DOMAIN}>`;
 
 	return r.emails.send({
 		from,

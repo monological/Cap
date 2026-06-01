@@ -94,9 +94,9 @@ pub async fn recover_recording(app: AppHandle, project_path: String) -> Result<S
         Ok(r) => r,
         Err(e) => {
             let reason = format!("{e}");
-            crate::posthog::async_capture_event(
+            crate::local_events::record_event(
                 &app,
-                crate::posthog::PostHogEvent::RecordingRecoveryFailed {
+                crate::local_events::LocalEvent::RecordingRecoveryFailed {
                     trigger: "app_startup",
                     reason: reason.clone(),
                 },
@@ -116,9 +116,9 @@ pub async fn recover_recording(app: AppHandle, project_path: String) -> Result<S
         segment_count, project_path
     );
 
-    crate::posthog::async_capture_event(
+    crate::local_events::record_event(
         &app,
-        crate::posthog::PostHogEvent::RecordingRecovered {
+        crate::local_events::LocalEvent::RecordingRecovered {
             trigger: "app_startup",
             recovered_duration_secs: estimated_duration_secs,
             segments_recovered: segment_count as u32,

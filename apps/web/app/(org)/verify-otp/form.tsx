@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, LogoBadge } from "@cap/ui";
+import { Button } from "@cap/ui";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useMutation } from "@tanstack/react-query";
@@ -158,8 +158,11 @@ export function VerifyOTPForm({
 				<p className="text-xs">Back</p>
 			</Link>
 
-			<Link className="flex mx-auto size-fit" href="/">
-				<LogoBadge className="size-12" />
+			<Link
+				className="mx-auto block text-4xl font-semibold leading-none text-gray-12"
+				href="/"
+			>
+				Cap
 			</Link>
 
 			<div className="flex flex-col justify-center items-center my-7 text-center">
@@ -222,27 +225,6 @@ export function VerifyOTPForm({
 						: "Didn't receive the code? Resend"}
 				</button>
 			</div>
-
-			<p className="mt-6 text-xs text-center text-gray-9">
-				By entering your email, you acknowledge that you have both read and
-				agree to Cap's{" "}
-				<Link
-					href="/terms"
-					target="_blank"
-					className="text-xs font-semibold text-gray-12 hover:text-blue-300"
-				>
-					Terms of Service
-				</Link>{" "}
-				and{" "}
-				<Link
-					href="/privacy"
-					target="_blank"
-					className="text-xs font-semibold text-gray-12 hover:text-blue-300"
-				>
-					Privacy Policy
-				</Link>
-				.
-			</p>
 		</motion.div>
 	);
 }

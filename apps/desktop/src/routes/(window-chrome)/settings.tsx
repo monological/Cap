@@ -417,7 +417,7 @@ export default function Settings(props: RouteSectionProps) {
 		} catch (e) {
 			console.error("Failed to check for updates:", e);
 			await dialog.message(
-				"Unable to check for updates. Please download the latest version manually from cap.so/download. Your data will not be lost.\n\nIf this issue persists, please contact support.",
+				"Unable to check for updates. Your data will not be lost.",
 				{ title: "Update Error", kind: "error" },
 			);
 		} finally {
@@ -491,15 +491,6 @@ export default function Settings(props: RouteSectionProps) {
 							<div class="mb-2 text-xs text-gray-11 flex flex-col items-start gap-1.5">
 								<span>v{v()}</span>
 								<div class="flex flex-col items-start gap-1.5">
-									<button
-										type="button"
-										class="text-gray-11 hover:text-gray-12 underline transition-colors"
-										onClick={() =>
-											shell.open("https://cap.so/download/versions")
-										}
-									>
-										View previous versions
-									</button>
 									<button
 										type="button"
 										class="text-gray-11 hover:text-gray-12 underline transition-colors disabled:cursor-default disabled:opacity-50 disabled:hover:text-gray-11"

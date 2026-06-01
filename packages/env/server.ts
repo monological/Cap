@@ -16,7 +16,7 @@ function createServerEnv() {
 			DATABASE_URL: z.string().describe("MySQL database URL"),
 			WEB_URL: z
 				.string()
-				.describe("Public URL of the server eg. https://cap.so"),
+				.describe("Public URL of the server, eg. https://video.example.com"),
 			NEXTAUTH_SECRET: z.string().describe("32 byte base64 string"),
 			NEXTAUTH_URL: z.string().describe("Should be the same as WEB_URL"),
 			DATABASE_ENCRYPTION_KEY: z
@@ -93,8 +93,7 @@ function createServerEnv() {
 			SUPERMEMORY_API_KEY: z.string().optional(),
 			SUPERMEMORY_KNOWLEDGE_TAG: z.string().optional(),
 
-			/// Cap Cloud
-			// These are only needed for Cap Cloud (https://cap.so)
+			/// Hosted billing and support integrations
 			STRIPE_SECRET_KEY: z.string().optional(),
 			STRIPE_WEBHOOK_SECRET: z.string().optional(),
 			DISCORD_FEEDBACK_WEBHOOK_URL: z.string().optional(),
@@ -117,7 +116,6 @@ function createServerEnv() {
 			VERCEL_BRANCH_URL_HOST: z.string().optional(),
 			VERCEL_PROJECT_PRODUCTION_URL_HOST: z.string().optional(),
 			VERCEL_AWS_ROLE_ARN: z.string().optional(),
-			POSTHOG_PERSONAL_API_KEY: z.string().optional(),
 			DUB_API_KEY: z.string().optional(),
 
 			/// Media Server

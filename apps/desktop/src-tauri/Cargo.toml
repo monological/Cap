@@ -1,7 +1,7 @@
 [package]
 name = "cap-desktop"
 version = "0.5.0"
-description = "Beautiful screen recordings, owned by you."
+description = "Video recording and sharing."
 authors = ["you"]
 edition = "2024"
 
@@ -70,7 +70,6 @@ global-hotkey = "0.7.0"
 rand = "0.8.5"
 cpal.workspace = true
 keyed_priority_queue = "0.4.2"
-sentry.workspace = true
 clipboard-rs = "0.2.2"
 whisper-rs = "0.11.0"
 lazy_static = "1.4.0"
@@ -106,7 +105,6 @@ wgpu.workspace = true
 pollster = "0.4"
 bytemuck = "1.23.1"
 kameo = "0.17.2"
-tauri-plugin-sentry = "0.5.0"
 thiserror.workspace = true
 bytes = "1.10.1"
 async-stream = "0.3.6"

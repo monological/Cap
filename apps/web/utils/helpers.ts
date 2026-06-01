@@ -9,11 +9,7 @@ export function classNames(...inputs: ClassValue[]) {
 }
 
 // Base allowed origins
-export const allowedOrigins = [
-	buildEnv.NEXT_PUBLIC_WEB_URL,
-	"https://cap.link",
-	"cap.link",
-];
+export const allowedOrigins = [buildEnv.NEXT_PUBLIC_WEB_URL];
 
 export function getHeaders(origin: string | null) {
 	// Allow "*" for custom domains or allowedOrigins for main domains

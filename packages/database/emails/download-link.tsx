@@ -1,3 +1,4 @@
+import { serverEnv } from "@cap/env";
 import { CAP_LOGO_URL } from "@cap/utils";
 import {
 	Body,
@@ -15,6 +16,8 @@ import {
 import Footer from "./components/Footer";
 
 export function DownloadLink({ email = "" }: { email: string }) {
+	const webUrl = serverEnv().WEB_URL;
+
 	return (
 		<Html>
 			<Head />
@@ -40,38 +43,12 @@ export function DownloadLink({ email = "" }: { email: string }) {
 						</Text>
 
 						<Section className="my-6">
-							<table cellPadding="0" cellSpacing="0" style={{ width: "100%" }}>
-								<tr>
-									<td style={{ paddingBottom: "12px" }}>
-										<Link
-											className="block w-full rounded-lg bg-black px-6 py-3 text-center text-[13px] font-semibold text-white no-underline"
-											href="https://cap.so/download/apple-silicon"
-										>
-											Download for Mac (Apple Silicon)
-										</Link>
-									</td>
-								</tr>
-								<tr>
-									<td style={{ paddingBottom: "12px" }}>
-										<Link
-											className="block w-full rounded-lg border border-solid border-gray-300 bg-white px-6 py-3 text-center text-[13px] font-semibold text-black no-underline"
-											href="https://cap.so/download/apple-intel"
-										>
-											Download for Mac (Intel)
-										</Link>
-									</td>
-								</tr>
-								<tr>
-									<td>
-										<Link
-											className="block w-full rounded-lg border border-solid border-gray-300 bg-white px-6 py-3 text-center text-[13px] font-semibold text-black no-underline"
-											href="https://cap.so/download/windows"
-										>
-											Download for Windows
-										</Link>
-									</td>
-								</tr>
-							</table>
+							<Link
+								className="block w-full rounded-lg bg-black px-6 py-3 text-center text-[13px] font-semibold text-white no-underline"
+								href={webUrl}
+							>
+								Open Cap
+							</Link>
 						</Section>
 
 						<Text className="text-sm leading-6 text-black mt-4">

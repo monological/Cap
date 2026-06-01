@@ -2,30 +2,23 @@ import type React from "react";
 import { trackEvent } from "@/app/utils/analytics";
 
 export const getDownloadUrl = (
-	platform: string | null,
-	isIntel: boolean,
+	_platform: string | null,
+	_isIntel: boolean,
 ): string => {
-	if (platform === "windows") {
-		return "/download/windows";
-	} else if (platform === "macos") {
-		return isIntel ? "/download/apple-intel" : "/download/apple-silicon";
-	} else {
-		// Default to Apple Silicon
-		return "/download/apple-silicon";
-	}
+	return "/api/download";
 };
 
 export const getDownloadButtonText = (
 	platform: string | null,
 	loading: boolean,
-	isIntel: boolean = false,
+	_isIntel: boolean = false,
 ): string => {
 	if (loading) {
 		return "Download Cap";
 	} else if (platform === "windows") {
-		return "Download for free";
+		return "Download Cap";
 	} else if (platform === "macos") {
-		return isIntel ? "Download for free" : "Download for free";
+		return "Download Cap";
 	} else {
 		return "Download Cap";
 	}
@@ -75,12 +68,12 @@ export const PlatformIcons: React.FC<PlatformIconsProps> = ({
 							source_page: source,
 							cta_location: "platform_icons",
 							target: "apple-silicon",
-							target_url: "/download/apple-silicon",
+							target_url: "/api/download",
 						});
-						window.location.href = "/download/apple-silicon";
+						window.location.href = "/api/download";
 					}}
 					className="focus:outline-none"
-					aria-label="Download for free"
+					aria-label="Download Cap"
 				>
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
@@ -96,13 +89,13 @@ export const PlatformIcons: React.FC<PlatformIconsProps> = ({
 			</div>
 			<div>
 				<a
-					href="/download"
+					href="/api/download"
 					onClick={() =>
 						trackEvent("download_cta_clicked", {
 							source_page: source,
 							cta_location: "platform_icons",
 							target: "download-page",
-							target_url: "/download",
+							target_url: "/api/download",
 						})
 					}
 					className="focus:outline-none"

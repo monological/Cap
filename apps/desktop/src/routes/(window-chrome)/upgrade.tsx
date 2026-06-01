@@ -514,7 +514,7 @@ export default function Page() {
 										class="rounded-full! text-lg! w-full mx-auto"
 										onClick={openCheckoutInExternalBrowser}
 									>
-										{loading() ? "Loading..." : "Upgrade to Cap Pro"}
+										{loading() ? "Loading..." : "Upgrade"}
 									</Button>
 								</div>
 							</div>

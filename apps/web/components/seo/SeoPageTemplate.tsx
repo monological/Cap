@@ -185,7 +185,7 @@ export const SeoPageTemplate = ({
 						>
 							<MotionButton
 								variant="blue"
-								href="/download"
+								href="/signup"
 								size="lg"
 								className="relative z-[20] w-full font-medium text-md sm:w-auto"
 							>
@@ -194,7 +194,7 @@ export const SeoPageTemplate = ({
 							{content.cta.secondaryButtonText && (
 								<MotionButton
 									variant="white"
-									href="/pricing"
+									href="/signup"
 									size="lg"
 									className="relative z-[20] w-full font-medium text-md sm:w-auto"
 								>
@@ -560,7 +560,7 @@ export const SeoPageTemplate = ({
 						<div className="flex flex-col justify-center items-center space-y-3 sm:flex-row sm:space-y-0 sm:space-x-4">
 							<Button
 								variant="blue"
-								href="/download"
+								href="/signup"
 								size="lg"
 								className="px-8 py-3 w-full font-medium transition-all duration-300 sm:w-auto sm:max-w-fit"
 							>
@@ -569,7 +569,7 @@ export const SeoPageTemplate = ({
 							{content.cta.secondaryButtonText && (
 								<Button
 									variant="white"
-									href="/pricing"
+									href="/signup"
 									size="lg"
 									className="px-8 py-3 w-full font-medium transition-all duration-300 sm:w-auto sm:max-w-fit"
 								>

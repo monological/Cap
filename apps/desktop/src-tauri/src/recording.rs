@@ -409,7 +409,7 @@ pub struct InProgressRecordingCommon {
     pub target_name: String,
     pub inputs: StartRecordingInputs,
     pub recording_dir: PathBuf,
-    pub health: Arc<crate::recording_telemetry::RecordingHealthAccumulator>,
+    pub health: Arc<crate::recording_health::RecordingHealthAccumulator>,
 }
 
 pub struct StopFailureContext {
@@ -1452,7 +1452,7 @@ pub async fn start_recording(
                 _ => Some(acquire_shareable_content_for_target(&inputs.capture_target).await?),
             };
 
-            let health = crate::recording_telemetry::RecordingHealthAccumulator::new();
+            let health = crate::recording_health::RecordingHealthAccumulator::new();
             let common = InProgressRecordingCommon {
                 target_name: project_name,
                 inputs: inputs.clone(),
@@ -1754,7 +1754,7 @@ pub async fn start_recording(
     let _ = RecordingEvent::Started.emit(&app);
     let _ = RecordingStarted.emit(&app);
 
-    emit_recording_started_telemetry(&app, &state_mtx).await;
+    record_recording_started_event(&app, &state_mtx).await;
 
     spawn_actor({
         let app = app.clone();
@@ -1822,16 +1822,16 @@ pub async fn start_recording(
                     if let Some((health, mode)) = accumulator_mode.as_ref()
                         && let Some((reason_text, critical)) = health.record_event(&event)
                     {
-                        use crate::posthog::{PostHogEvent, async_capture_event};
-                        use crate::recording_telemetry::{CriticalEvent, mode_label};
+                        use crate::local_events::{LocalEvent, record_event};
+                        use crate::recording_health::{CriticalEvent, mode_label};
                         match critical {
                             CriticalEvent::MuxerCrashed {
                                 seconds_into_recording,
                                 ..
                             } => {
-                                async_capture_event(
+                                record_event(
                                     &app,
-                                    PostHogEvent::RecordingMuxerCrashed {
+                                    LocalEvent::RecordingMuxerCrashed {
                                         mode: mode_label(*mode),
                                         reason: reason_text,
                                         seconds_into_recording,
@@ -1842,9 +1842,9 @@ pub async fn start_recording(
                                 seconds_into_recording,
                                 ..
                             } => {
-                                async_capture_event(
+                                record_event(
                                     &app,
-                                    PostHogEvent::RecordingAudioDegraded {
+                                    LocalEvent::RecordingAudioDegraded {
                                         mode: mode_label(*mode),
                                         reason: reason_text,
                                         seconds_into_recording,
@@ -1855,33 +1855,33 @@ pub async fn start_recording(
                     }
 
                     if let Some((_, mode)) = accumulator_mode.as_ref() {
-                        use crate::posthog::{PostHogEvent, async_capture_event};
-                        use crate::recording_telemetry::mode_label;
+                        use crate::local_events::{LocalEvent, record_event};
+                        use crate::recording_health::mode_label;
                         let mode_str = mode_label(*mode);
                         match &event {
                             cap_recording::PipelineHealthEvent::DiskSpaceLow {
                                 bytes_remaining,
                                 ..
-                            } => async_capture_event(
+                            } => record_event(
                                 &app,
-                                PostHogEvent::RecordingDiskSpaceLow {
+                                LocalEvent::RecordingDiskSpaceLow {
                                     mode: mode_str,
                                     bytes_remaining: *bytes_remaining,
                                 },
                             ),
                             cap_recording::PipelineHealthEvent::DiskSpaceExhausted {
                                 bytes_remaining,
-                            } => async_capture_event(
+                            } => record_event(
                                 &app,
-                                PostHogEvent::RecordingDiskSpaceExhausted {
+                                LocalEvent::RecordingDiskSpaceExhausted {
                                     mode: mode_str,
                                     bytes_remaining: *bytes_remaining,
                                 },
                             ),
                             cap_recording::PipelineHealthEvent::DeviceLost { subsystem } => {
-                                async_capture_event(
+                                record_event(
                                     &app,
-                                    PostHogEvent::RecordingDeviceLost {
+                                    LocalEvent::RecordingDeviceLost {
                                         mode: mode_str,
                                         subsystem: subsystem.clone(),
                                     },
@@ -1890,9 +1890,9 @@ pub async fn start_recording(
                             cap_recording::PipelineHealthEvent::EncoderRebuilt {
                                 backend,
                                 attempt,
-                            } => async_capture_event(
+                            } => record_event(
                                 &app,
-                                PostHogEvent::RecordingEncoderRebuilt {
+                                LocalEvent::RecordingEncoderRebuilt {
                                     mode: mode_str,
                                     backend: backend.clone(),
                                     attempt: *attempt,
@@ -1901,18 +1901,18 @@ pub async fn start_recording(
                             cap_recording::PipelineHealthEvent::SourceAudioReset {
                                 source,
                                 starvation_ms,
-                            } => async_capture_event(
+                            } => record_event(
                                 &app,
-                                PostHogEvent::RecordingSourceAudioReset {
+                                LocalEvent::RecordingSourceAudioReset {
                                     mode: mode_str,
                                     source: source.clone(),
                                     starvation_ms: *starvation_ms,
                                 },
                             ),
                             cap_recording::PipelineHealthEvent::CaptureTargetLost { target } => {
-                                async_capture_event(
+                                record_event(
                                     &app,
-                                    PostHogEvent::RecordingCaptureTargetLost {
+                                    LocalEvent::RecordingCaptureTargetLost {
                                         mode: mode_str,
                                         target: target.clone(),
                                     },
@@ -2597,10 +2597,10 @@ async fn handle_recording_end(
             Some(feed) => feed.dropped_message_count().await,
             None => 0,
         };
-        crate::posthog::async_capture_event(
+        crate::local_events::record_event(
             &handle,
-            crate::posthog::PostHogEvent::RecordingCompleted {
-                mode: crate::recording_telemetry::mode_label(mode),
+            crate::local_events::LocalEvent::RecordingCompleted {
+                mode: crate::recording_health::mode_label(mode),
                 status,
                 duration_secs,
                 segment_count: 1,
@@ -3462,9 +3462,9 @@ pub fn remux_fragmented_recording_with_trigger(
                         })
                         .unwrap_or(0);
 
-                    crate::posthog::async_capture_event(
+                    crate::local_events::record_event(
                         app_handle,
-                        crate::posthog::PostHogEvent::RecordingRecovered {
+                        crate::local_events::LocalEvent::RecordingRecovered {
                             trigger,
                             recovered_duration_secs,
                             segments_recovered,
@@ -3477,9 +3477,9 @@ pub fn remux_fragmented_recording_with_trigger(
             Err(e) => {
                 let reason = format!("{e}");
                 if let Some(app_handle) = app {
-                    crate::posthog::async_capture_event(
+                    crate::local_events::record_event(
                         app_handle,
-                        crate::posthog::PostHogEvent::RecordingRecoveryFailed {
+                        crate::local_events::LocalEvent::RecordingRecoveryFailed {
                             trigger,
                             reason: reason.clone(),
                         },
@@ -3517,9 +3517,9 @@ fn classify_error_message(error: &str) -> String {
     class.to_string()
 }
 
-async fn emit_recording_started_telemetry(app: &AppHandle, state_mtx: &MutableState<'_, App>) {
-    use crate::posthog::{PostHogEvent, async_capture_event};
-    use crate::recording_telemetry::{mode_label, target_kind_label};
+async fn record_recording_started_event(app: &AppHandle, state_mtx: &MutableState<'_, App>) {
+    use crate::local_events::{LocalEvent, record_event};
+    use crate::recording_health::{mode_label, target_kind_label};
 
     let (mode, target_kind, has_camera, has_mic, has_system_audio) = {
         let state = state_mtx.read().await;
@@ -3552,9 +3552,9 @@ async fn emit_recording_started_telemetry(app: &AppHandle, state_mtx: &MutableSt
         .unwrap_or(true);
     let target_fps = general.as_ref().map(|s| s.max_fps).unwrap_or(60);
 
-    async_capture_event(
+    record_event(
         app,
-        PostHogEvent::RecordingStarted {
+        LocalEvent::RecordingStarted {
             mode,
             target_kind,
             has_camera,

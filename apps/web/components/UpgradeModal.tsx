@@ -165,12 +165,12 @@ const UpgradeModalImpl = ({
 			}
 
 			if (data.subscription === true) {
-				toast.success("You are already on the Cap Pro plan");
+				toast.success("You are already on this plan");
 				onOpenChange(false);
 			}
 
 			if (data.subscription === true) {
-				toast.success("You are already on the Cap Pro plan");
+				toast.success("You are already on this plan");
 				onOpenChange(false);
 			}
 
@@ -218,7 +218,7 @@ const UpgradeModalImpl = ({
 								<div className="flex relative flex-col flex-1 justify-center items-center py-6 w-full">
 									<div className="flex flex-col items-center">
 										<h1 className="text-3xl font-medium text-gray-12">
-											Upgrade to Cap Pro
+											Upgrade plan
 										</h1>
 									</div>
 									<p className="mt-1 text-lg text-center text-gray-11">
@@ -299,9 +299,7 @@ const UpgradeModalImpl = ({
 										className="mt-5 w-full max-w-sm h-14 text-lg"
 										disabled={proCheckoutMutation.isPending}
 									>
-										{proCheckoutMutation.isPending
-											? "Loading..."
-											: "Upgrade to Cap Pro"}
+										{proCheckoutMutation.isPending ? "Loading..." : "Upgrade"}
 									</Button>
 									{dismissible && (
 										<button

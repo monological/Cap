@@ -356,15 +356,7 @@ export function OrganizationStorageIntegrations({
 				{expandedIntegration === "s3" && (
 					<div className="border-t border-gray-3 px-3.5 py-4">
 						<p className="text-[12px] text-gray-10 mb-4">
-							Connect your own bucket for full control.{" "}
-							<a
-								href="https://cap.so/docs/s3-config"
-								target="_blank"
-								rel="noopener noreferrer"
-								className="underline text-gray-12 hover:text-gray-11"
-							>
-								Setup guide
-							</a>
+							Connect your own bucket for full control.
 						</p>
 						<div className="grid gap-3 md:grid-cols-2">
 							<div className="flex flex-col gap-1">

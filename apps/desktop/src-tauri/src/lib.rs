@@ -18,17 +18,17 @@ mod general_settings;
 mod hotkeys;
 mod http_client;
 mod import;
+mod local_events;
 mod logging;
 mod notifications;
 mod panel_manager;
 mod permissions;
 mod platform;
-mod posthog;
 mod power_observer;
 mod presets;
 mod recording;
+mod recording_health;
 mod recording_settings;
-mod recording_telemetry;
 mod recovery;
 mod screenshot_editor;
 mod target_select_overlay;
@@ -1870,11 +1870,6 @@ async fn cleanup_app_resources_for_exit(app: &AppHandle) {
 #[cfg(target_os = "macos")]
 fn finalize_app_exit(app: &AppHandle, exit_code: i32) -> ! {
     let _ = app;
-    sentry::Hub::with(|hub| {
-        if let Some(client) = hub.client() {
-            let _ = client.flush(Some(Duration::from_millis(250)));
-        }
-    });
     match app_exit_action(exit_code) {
         AppExitAction::Process(code) => force_exit(code),
     }
@@ -3940,7 +3935,7 @@ async fn check_notification_permissions(app: AppHandle) {
 #[instrument(skip(app))]
 async fn set_server_url(app: MutableState<'_, App>, server_url: String) -> Result<(), ()> {
     let mut app = app.write().await;
-    posthog::set_server_url(&server_url);
+    local_events::set_server_url(&server_url);
     app.server_url = server_url;
 
     Ok(())
@@ -4132,7 +4127,7 @@ pub async fn run(recording_logging_handle: LoggingHandle, logs_dir: PathBuf) {
         })
         .ok();
 
-    posthog::init();
+    local_events::init();
 
     let tauri_context = tauri::generate_context!();
 
@@ -4503,15 +4498,6 @@ pub async fn run(recording_logging_handle: LoggingHandle, logs_dir: PathBuf) {
                 }
             });
 
-            if let Ok(Some(auth)) = AuthStore::load(&app) {
-                sentry::configure_scope(|scope| {
-                    scope.set_user(auth.user_id.map(|id| sentry::User {
-                        id: Some(id),
-                        ..Default::default()
-                    }));
-                });
-            }
-
             {
                 let (server_url, should_update) = if cfg!(debug_assertions)
                     && let Ok(url) = std::env::var("VITE_SERVER_URL")
@@ -4526,7 +4512,7 @@ pub async fn run(recording_logging_handle: LoggingHandle, logs_dir: PathBuf) {
                 } else {
                     (
                         option_env!("VITE_SERVER_URL")
-                            .unwrap_or("https://cap.so")
+                            .unwrap_or("http://localhost:3123")
                             .to_string(),
                         true,
                     )
@@ -4541,7 +4527,7 @@ pub async fn run(recording_logging_handle: LoggingHandle, logs_dir: PathBuf) {
                     .ok();
                 }
 
-                posthog::set_server_url(&server_url);
+                local_events::set_server_url(&server_url);
 
                 let camera_preview = CameraPreviewManager::new(&app);
                 let camera_session_id_handle = camera_preview.session_id_handle();
@@ -5102,10 +5088,6 @@ pub async fn run(recording_logging_handle: LoggingHandle, logs_dir: PathBuf) {
             if let Err(panic) = result {
                 let message = panic_payload_message(&panic);
                 tracing::error!(panic = %message, "Suppressed panic in Tauri WindowEvent handler");
-                sentry::capture_message(
-                    &format!("Tauri WindowEvent panic suppressed: {message}"),
-                    sentry::Level::Error,
-                );
             }
         })
         .build(tauri_context)
@@ -5118,10 +5100,6 @@ pub async fn run(recording_logging_handle: LoggingHandle, logs_dir: PathBuf) {
             if let Err(panic) = result {
                 let message = panic_payload_message(&panic);
                 tracing::error!(panic = %message, "Suppressed panic in Tauri RunEvent handler");
-                sentry::capture_message(
-                    &format!("Tauri RunEvent panic suppressed: {message}"),
-                    sentry::Level::Error,
-                );
             }
         });
 }
@@ -5152,10 +5130,6 @@ where
                 command = command_name,
                 panic = %message,
                 "Suppressed panic in Tauri command"
-            );
-            sentry::capture_message(
-                &format!("Tauri command '{command_name}' panicked: {message}"),
-                sentry::Level::Error,
             );
             Err(format!("{command_name} failed unexpectedly"))
         }

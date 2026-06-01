@@ -21,9 +21,6 @@ export const LoomHttpLive = HttpApiBuilder.group(
 					);
 
 					const user = yield* CurrentUser;
-					if (!user.email.endsWith("@cap.so"))
-						return yield* Effect.die("Internal access only");
-
 					const result = yield* workflows
 						.LoomImportVideo({
 							cap: { userId: user.id, orgId: user.activeOrganizationId },

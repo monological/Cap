@@ -61,7 +61,7 @@ const AdminNavItems = ({ toggleMobileNav }: Props) => {
 	const [open, setOpen] = useState(false);
 	const { user, sidebarCollapsed, userCapsCount } = useDashboardContext();
 
-	const DEVELOPER_DASHBOARD_ALLOWED_EMAILS = ["richie@cap.so"];
+	const DEVELOPER_DASHBOARD_ALLOWED_EMAILS: string[] = [];
 
 	const showDeveloperDashboard =
 		buildEnv.NEXT_PUBLIC_IS_CAP &&
@@ -386,7 +386,7 @@ const AdminNavItems = ({ toggleMobileNav }: Props) => {
 						</div>
 					)}
 					<p className="mt-2 text-xs text-center truncate text-gray-10">
-						Cap Software, Inc. {new Date().getFullYear()}.
+						Cap {new Date().getFullYear()}.
 					</p>
 				</div>
 			</nav>

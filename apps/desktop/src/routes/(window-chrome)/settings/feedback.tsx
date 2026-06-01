@@ -2,7 +2,6 @@ import { Button } from "@cap/ui-solid";
 import { action, useAction, useSubmission } from "@solidjs/router";
 import { getVersion } from "@tauri-apps/api/app";
 import { type OsType, type as ostype } from "@tauri-apps/plugin-os";
-import * as shell from "@tauri-apps/plugin-shell";
 import { createResource, createSignal, For, Show } from "solid-js";
 import toast from "solid-toast";
 
@@ -103,19 +102,6 @@ export default function FeedbackTab() {
 							</Button>
 						</fieldset>
 					</form>
-				</Section>
-
-				<Section
-					title="Join the Community"
-					description="Have questions, want to share ideas, or just hang out? Join the Cap Discord community."
-				>
-					<Button
-						onClick={() => shell.open("https://cap.link/discord")}
-						size="md"
-						variant="gray"
-					>
-						Join Discord
-					</Button>
 				</Section>
 
 				<Section

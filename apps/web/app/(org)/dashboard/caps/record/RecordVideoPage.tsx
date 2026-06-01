@@ -32,7 +32,7 @@ export const RecordVideoPage = () => {
 				document.removeEventListener("visibilitychange", onChange);
 				window.removeEventListener("pagehide", onChange);
 				window.removeEventListener("blur", onChange);
-				window.location.assign("/download");
+				window.location.assign("/api/download");
 			}
 		}, 1500);
 	}, []);

@@ -133,9 +133,9 @@ describe("openShareUrlInNewTab", () => {
 			open,
 		});
 
-		expect(openShareUrlInNewTab("https://cap.so/s/test-video")).toBe(true);
+		expect(openShareUrlInNewTab("https://example.com/s/test-video")).toBe(true);
 		expect(open).toHaveBeenCalledWith(
-			"https://cap.so/s/test-video",
+			"https://example.com/s/test-video",
 			"_blank",
 			"noopener,noreferrer",
 		);
@@ -148,7 +148,9 @@ describe("openShareUrlInNewTab", () => {
 			open: vi.fn(() => null),
 		});
 
-		expect(openShareUrlInNewTab("https://cap.so/s/test-video")).toBe(false);
+		expect(openShareUrlInNewTab("https://example.com/s/test-video")).toBe(
+			false,
+		);
 
 		vi.unstubAllGlobals();
 	});
