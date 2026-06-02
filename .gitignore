@@ -37,6 +37,7 @@ outputs
 *.sw?
 .turbo
 pnpm-lock.yaml
+.pnpm-store/
 .zed
 .output
 .vinxi
